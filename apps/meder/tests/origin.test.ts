@@ -39,6 +39,44 @@ test('configured origin handles proxy TLS but never broadens to other origins or
   assert.throws(() => validateOrigin(request(allowed, '127.0.0.1:3000', { 'sec-fetch-site': 'cross-site' }), allowed, false), denied);
 });
 
+test('managed external preview requires the exact environment marker, HTTPS and matching Host', () => {
+  const suffix = '.preview.usehoplite.com';
+  const host = 'current.preview.usehoplite.com';
+  const origin = `https://${host}`;
+  assert.equal(validateOrigin(request(origin, host), undefined, false, suffix).origin, origin);
+  assert.equal(validateOrigin(request('https://future.preview.usehoplite.com', 'future.preview.usehoplite.com'), undefined, false, suffix).origin, 'https://future.preview.usehoplite.com');
+  for (const incoming of [
+    request(origin, 'sibling.preview.usehoplite.com'),
+    request('https://sibling.preview.usehoplite.com', host),
+    request(`http://${host}`, host),
+    request('https://preview.usehoplite.com', 'preview.usehoplite.com'),
+    request('https://current.preview.usehoplite.com.attacker.example', 'current.preview.usehoplite.com.attacker.example'),
+    request(origin, '127.0.0.1:3000', { 'x-forwarded-host': host, 'x-forwarded-proto': 'https' }),
+    request(origin, host, { 'sec-fetch-site': 'cross-site' }),
+    request(`${origin}:8443`, host),
+  ]) assert.throws(() => validateOrigin(incoming, undefined, false, suffix), denied);
+  for (const marker of ['', '.example.com', '*.preview.usehoplite.com', `${suffix},.example.com`]) {
+    assert.throws(() => validateOrigin(request(origin, host), undefined, false, marker), denied);
+  }
+  const noHost = new Request('http://0.0.0.0:3000/api/diagnoses', { headers: { origin } });
+  assert.throws(() => validateOrigin(noHost, undefined, false, suffix), denied);
+  assert.throws(() => validateOrigin(request(origin, host), undefined, true, suffix), denied);
+  assert.throws(() => validateOrigin(request(origin, host), 'https://other.example', false, suffix), denied);
+});
+
+test('managed preview default environment lookup fails closed when the marker is absent', () => {
+  const original = process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS;
+  try {
+    delete process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS;
+    assert.throws(() => validateOrigin(request('https://current.preview.usehoplite.com', 'current.preview.usehoplite.com'), undefined, false), denied);
+    process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS = '.preview.usehoplite.com';
+    assert.equal(validateOrigin(request('https://current.preview.usehoplite.com', 'current.preview.usehoplite.com'), undefined, false).protocol, 'https:');
+  } finally {
+    if (original === undefined) delete process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS;
+    else process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS = original;
+  }
+});
+
 test('actual route accepts Next-shaped loopback requests and canonicalizes both UI fixture aliases', async () => {
   for (const [fixtureId, canonical] of [['repairable_quantity', 'repairable'], ['ambiguous_submission', 'ambiguous']] as const) {
     const incoming = request('http://127.0.0.1:3000');

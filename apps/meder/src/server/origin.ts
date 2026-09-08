@@ -1,6 +1,6 @@
 import { SafeError } from './safety';
 
-export function validateOrigin(request: Request, configured = process.env.MEDER_ALLOWED_ORIGIN, production = process.env.NODE_ENV === 'production'): URL {
+export function validateOrigin(request: Request, configured = process.env.MEDER_ALLOWED_ORIGIN, production = process.env.NODE_ENV === 'production', hostSuffix = process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS): URL {
   const supplied = request.headers.get('origin');
   const denied = () => { throw new SafeError('INVALID_ORIGIN', 403); };
   if (!supplied || request.headers.get('sec-fetch-site') === 'cross-site') return denied();
@@ -12,6 +12,9 @@ export function validateOrigin(request: Request, configured = process.env.MEDER_
     if (supplied !== configured) return denied();
     return origin;
   }
+  if (!production && hostSuffix === '.preview.usehoplite.com'
+    && origin.hostname.endsWith('.preview.usehoplite.com') && origin.protocol === 'https:'
+    && origin.host === request.headers.get('host')) return origin;
   const internal = new URL(request.url);
   const host = request.headers.get('host') ?? internal.host;
   if (production || !['localhost', '127.0.0.1'].includes(origin.hostname)
