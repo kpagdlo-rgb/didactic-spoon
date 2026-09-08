@@ -3,8 +3,8 @@
 - **Product name:** Meder
 - **Internal slug:** `meder`
 - **Previous concept name:** OrderMedic
-- **Version:** planning v1, 8 September 2026
-- **State:** specified, not implemented
+- **Version:** implementation checkpoint v2, 8 September 2026
+- **State:** tested synthetic diagnostic application; real-model and external release gates open
 
 > **Order clarity. Without another trade.**
 
@@ -16,7 +16,7 @@ Use **Meder** in the application title, package/workspace name, README, demo, an
 
 The tone is calm, precise, and nonjudgmental. Prefer “This quantity does not match the allowed step” over “You entered an invalid order.” Prefer “No correction fits your limit” over “Trade failed.” Avoid “safe trade,” “guaranteed acceptance,” or claims to recover funds.
 
-Suggested visual direction—not implemented: warm off-white backgrounds, deep slate text, restrained teal for proposed changes, amber for uncertainty, red only for blocked input or refusal. Every state also has a text label; never rely on color alone. This is a finance diagnostic product, not medical software.
+The implemented interface uses warm off-white backgrounds, deep slate text, restrained teal for proposed changes, and explicit uncertainty/refusal labels. Every state also has a text label; never rely on color alone. This is a finance diagnostic product, not medical software.
 
 ## User and job
 
@@ -44,7 +44,8 @@ Suggested visual direction—not implemented: warm off-white backgrounds, deep s
 
 - [Implementation specification](SPEC.md) is the current Meder build contract.
 - [TODO plan](TODO.md) defines ordered work and release gates.
-- [Machine-readable manifest](manifest.json) records planned configuration, not a working runtime.
+- [Machine-readable manifest](manifest.json) records implemented configuration and separately unverified release claims; it is not live runtime telemetry.
+- [Plan audit](PLAN-AUDIT.md) records the corrected architectural drift. Final `RUNBOOK.md` and `SUBMISSION.md` handoff documents are tracked in the checklist.
 - [OrderMedic blueprint](../ordermedic-build-blueprint.md) remains the technical/evidence foundation. Meder adds delivery structure and branding; it does not expand financial permissions.
 - [Canonical Track A guide](../../track-a-agent-os-standalone.md) governs research interpretation. The `.old` guide is historical.
 
@@ -53,9 +54,17 @@ Design choices in these files are engineering recommendations, not Binance rules
 ### Known blockers, not assumptions to hide
 
 1. A public time request from this sandbox returned HTTP 451 on 8 September at `20:57:27.679677Z`; further exchange probes stopped. Live mode remains disabled here. This does not establish the user's personal eligibility. Do not evade the restriction through hosts or proxies.
-2. A model provider, server-side credential path, and actual tool-calling runtime are not established for Meder.
+2. The optional OpenAI Responses adapter and bounded tool runtime are implemented and boundary-tested with fake providers. Server configuration is currently absent; no genuine model tool invocation has been observed. Do not claim a verified working agent.
 3. Track A read-only/fixture acceptance and authenticated eligibility rules remain unverified. Meder's diagnostic MVP does not demonstrate a qualifying Track B trade.
-4. The existing Python Preview is a **document reader**, not Meder. Application scaffolding, tests, and deployment remain TODO.
+4. The independent `apps/meder` application replaces the earlier embedded demo. The Python reader remains separate on port 3001. Local build and browser verification are not a production deployment claim.
+
+## Implemented delivery and verification checkpoint
+
+The Node 24 application pins Next.js 16.3.4, React 19.2.8, and TypeScript 5.9.3 with an npm lockfile. Closed structural validators, a single BigInt/rational solver, versioned controller-owned fixtures, immutable evidence, bounded read-only tools, session-bound create/poll/cancel routes, sanitized export, and explicit deterministic/model controls are implemented. Provider prose is discarded; explanations and verdicts come from the solver.
+
+The parent verification checkpoint on 8 September 2026 reports typecheck/build passing, 67 Node tests passing (including 1,000 generated exhaustive-reference cases), seven Playwright tests passing, and six separate Python reader tests passing. Additional tests may follow; these counts are not a rolling certification. No video or real-model trace has been recorded. Browser coverage includes repair, refusal, ambiguity, off-grid quantity, exact SELL, JSON input, narrow-screen focus, and copy/export.
+
+The app performs no Binance reads: disabled live requests return a local 451. OpenAI network access is optional and server-only. Signed HttpOnly sessions and reports expire after 15 minutes in single-process memory; restart loses state. Model admission permits one concurrent run and defaults to 10 admitted runs per process lifetime (`MEDER_MODEL_RUN_BUDGET`, integer 1–100). Failure/cancellation does not refund admission. Production requires an exact `MEDER_ALLOWED_ORIGIN`; a model-enabled deployment additionally requires an authenticated private gateway and provider spending limits. Session isolation and origin checks are not user authentication or a dollar cap.
 
 ## Definition of release
 

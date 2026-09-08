@@ -1,43 +1,78 @@
 {
-  "manifestVersion": 1,
+  "manifestVersion": 2,
   "name": "Meder",
   "slug": "meder",
   "previousConcept": "OrderMedic",
-  "status": "planned_not_implemented",
+  "status": "tested_synthetic_diagnostic_application",
+  "checkpointDate": "2026-09-08",
   "tagline": "Order clarity. Without another trade.",
   "documents": {
     "overview": "MANIFEST.md",
     "specification": "SPEC.md",
     "plan": "TODO.md",
+    "audit": "PLAN-AUDIT.md",
     "foundation": "../ordermedic-build-blueprint.md"
   },
   "scope": {
-    "venue": "Binance Spot",
+    "venue": "Binance Spot-style synthetic diagnostics",
     "orderTypes": ["LIMIT"],
     "timeInForce": ["GTC"],
     "buyQuantityPolicies": ["exact", "allow_all_downward"],
     "sellQuantityPolicies": ["exact"],
     "mutableOrderFields": ["quantity"],
-    "notionalCapExcludesFees": true
+    "quantityMutationRequiresExplicitBuyDownwardPolicy": true,
+    "notionalCapExcludesFees": true,
+    "exchangeAcceptanceEstablished": false
   },
   "runtime": {
-    "frameworkRecommendation": "Next.js with TypeScript and server route handlers",
-    "versions": "resolve_compatible_versions_and_lock_before_build",
-    "workspaceRecommendation": "apps/meder",
-    "modelProvider": null,
+    "workspace": "apps/meder",
+    "framework": "Next.js",
+    "versions": {
+      "next": "16.3.4",
+      "react": "19.2.8",
+      "typescript": "5.9.3",
+      "verifiedNodeMajor": 24
+    },
+    "lockfile": "apps/meder/package-lock.json",
+    "validation": "closed structural hand validators",
+    "arithmetic": "server-owned BigInt rational solver",
+    "unitTestRunner": "node:test via tsx",
+    "browserTestRunner": "Playwright",
+    "appPort": 3000,
+    "documentReaderPort": 3001,
+    "modelProvider": "optional OpenAI Responses via server-side fetch",
+    "modelConfiguredAtCheckpoint": false,
+    "modelCredentialVariables": ["OPENAI_API_KEY", "OPENAI_MODEL"],
+    "providerProseDisplayed": false,
+    "integration": "server-owned function tools; not hosted MCP or installed Skill",
     "liveModeEnabled": false,
-    "liveModeBlocker": "Recorded sandbox HTTP 451; independently legitimate eligible access required",
-    "fixtureMode": "explicit_selection_only"
+    "liveAdapterImplemented": false,
+    "liveModeBlocker": "Historical sandbox HTTP 451; independently legitimate eligible access required",
+    "disabledLiveResponse": { "status": 451, "makesExchangeRequest": false },
+    "fixtureMode": "explicit_selection_only",
+    "planners": ["deterministic", "model"],
+    "persistence": "single-process in-memory; lost on restart",
+    "session": "signed HttpOnly SameSite=Strict cookie; Secure on HTTPS",
+    "productionOriginVariable": "MEDER_ALLOWED_ORIGIN",
+    "productionOriginMustMatchExactly": true,
+    "modelEnablementRequiresPrivateAuthenticatedGateway": true
   },
-  "plannedCapabilities": {
-    "publicReads": ["GET /api/v3/time", "GET /api/v3/exchangeInfo"],
+  "capabilities": {
+    "tools": ["getServerTime", "getSymbolMetadata", "validateAndPatch"],
+    "publicExchangeReads": [],
+    "optionalProviderNetworkAccess": true,
     "financialWrites": [],
     "authenticatedOrderLookup": false,
     "walletConnection": false,
-    "signing": false
+    "exchangeCredentials": false,
+    "signing": false,
+    "copyProposal": true,
+    "redactedReportExport": true,
+    "sessionOwnedCancellation": true
   },
   "limits": {
     "requestBytes": 16384,
+    "responseBytes": 1048576,
     "rejectionMessageCharacters": 512,
     "decimalDigits": 40,
     "decimalFractionalPlaces": 18,
@@ -46,7 +81,15 @@
     "modelCallDeadlineMs": 12000,
     "publicReadDeadlineMs": 3000,
     "metadataCacheTtlMs": 60000,
-    "reportRetentionMs": 900000
+    "reportRetentionMs": 900000,
+    "maxConcurrentModelRunsPerProcess": 1,
+    "defaultModelRunsPerProcessLifetime": 10,
+    "modelRunBudgetVariable": "MEDER_MODEL_RUN_BUDGET",
+    "modelRunBudgetRange": [1, 100],
+    "invalidBudgetDisablesAdmission": true,
+    "failedOrCanceledAdmissionRefunded": false,
+    "budgetResetsOnProcessRestart": true,
+    "sharedDurableBudget": false
   },
   "resultStates": [
     "ALREADY_VALID",
@@ -56,12 +99,31 @@
     "INCOMPLETE",
     "UNRESOLVED"
   ],
-  "coreFixtures": ["repairable_quantity", "budget_refusal", "ambiguous_submission"],
+  "coreFixtures": [
+    "repairable",
+    "budget_refusal",
+    "ambiguous",
+    "off_grid_min"
+  ],
+  "verificationCheckpoint": {
+    "source": "parent-reported rebuild verification on 2026-09-08; preliminary counts, not rolling certification",
+    "cleanInstall": true,
+    "typecheck": true,
+    "productionBuild": true,
+    "passingNodeTests": 67,
+    "generatedExhaustiveReferenceSolverCases": 1000,
+    "passingPlaywrightTests": 7,
+    "passingDocumentReaderTests": 6,
+    "videoRecorded": false
+  },
   "releaseClaims": {
-    "implemented": false,
+    "implemented": true,
+    "syntheticDiagnosticsTested": true,
     "realModelVerified": false,
     "liveDataVerified": false,
+    "productionDeploymentVerified": false,
     "competitionEligibilityVerified": false,
-    "submitted": false
+    "submitted": false,
+    "submissionReceiptVerified": false
   }
 }

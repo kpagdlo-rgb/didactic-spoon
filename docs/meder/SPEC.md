@@ -1,10 +1,10 @@
-# Meder — implementation specification v1
+# Meder — implementation specification v2
 
-**Status:** planned behavior; no Meder app or app test suite exists yet. [Manifest](MANIFEST.md) · [Build checklist](TODO.md).
+**Status:** implementation baseline updated 8 September 2026. The independent synthetic application and test suites exist; genuine model use, live data, authenticated eligibility, and submission remain unverified. Requirements below preserve the original financial boundary; future live requirements are not claims of a shipped live adapter. [Manifest](MANIFEST.md) · [Build checklist](TODO.md) · [Drift audit](PLAN-AUDIT.md).
 
 ## 1. Architecture and delivery boundary
 
-Create `apps/meder` as an independent Next.js/TypeScript application; preserve the existing Python documentation reader. Resolve compatible framework, React, Node, validation, and model SDK versions and commit a lockfile at scaffold time. Do not describe uninstalled versions as verified. Use Zod-style closed schemas and exact integer/rational arithmetic for financial constraints; Vitest and Playwright are recommended test tools.
+`apps/meder` is an independent Next.js/TypeScript application; the Python documentation reader remains separate on port 3001. Next.js 16.3.4, React 19.2.8, and TypeScript 5.9.3 are pinned with an npm lockfile and verified on Node 24. The implementation deliberately uses closed structural hand validators rather than Zod, BigInt/rational arithmetic in `src/domain/exact.ts` and `solver.ts`, Node's `node:test` via `tsx` rather than Vitest, and Playwright for browser tests. The optional OpenAI Responses adapter uses server-side `fetch`; no model SDK is required. These are implementation choices, not relaxation of schema, arithmetic, or verification requirements. No embedded Python or browser solver is authoritative.
 
 ```text
 Browser → byte/schema gate → normalized immutable run record
@@ -18,7 +18,7 @@ Browser → byte/schema gate → normalized immutable run record
                      sanitized report → browser
 ```
 
-The model chooses permitted diagnostic reads and explains the solver result. It cannot change the authoritative verdict, intent, budget, metadata, source mode, or arithmetic. Ordinary HTTP tool adapters are not automatically hosted MCP or installed Binance Skills; label the integration actually implemented.
+When configured, the model chooses permitted diagnostic tools. Provider prose is deliberately discarded: the solver supplies authoritative explanations and verdicts. The model cannot change intent, budget, metadata, source mode, or arithmetic. Deterministic mode is labeled separately and cannot demonstrate model agency. These are server-owned function tools, not hosted MCP or installed Binance Skills.
 
 ## 2. Input and intent
 
@@ -41,7 +41,7 @@ The UI requires an explicit mode:
 1. **Synthetic demo:** controller loads a versioned fixture; all results remain labeled synthetic.
 2. **Live public data:** disabled in this sandbox because of recorded HTTP 451. Enable only after independently legitimate eligibility/access is established and a real read is observed. No proxy or alternate-host evasion.
 
-Each evidence record has a server-issued ID, run ID, mode, symbol, received-at timestamp, response hash, and validation state. Live metadata expires after 60 seconds measured with a monotonic elapsed-time clock. This is a cache-age policy, not a guarantee exchange rules cannot change sooner. Server-time observations do not prove metadata freshness or historical rejection causality.
+Each evidence record has a server-issued ID, run ID, mode, symbol, received-at timestamp, response hash, and validation state. Metadata evidence expires after 60 seconds measured with a monotonic elapsed-time clock. This is a cache-age policy, not a guarantee exchange rules cannot change sooner. Server-time observations do not prove metadata freshness or historical rejection causality.
 
 Bound public responses to 1 MiB and filter arrays to 100 entries. Reject malformed, duplicate/contradictory, wrong-symbol, non-trading-symbol, or unsupported required inputs. Check that LIMIT/GTC are supported where the returned schema provides the relevant capability. Unknown nonlocal account/dynamic checks remain prominently unchecked; never infer balance or permissions from public data.
 
@@ -98,15 +98,20 @@ RECEIVED → PARSED → EVIDENCE_LOADING → VALIDATING → terminal result
 
 User stop, invalid input, and provider failure are run outcomes—not fabricated diagnostic verdicts. Report canceled/error states separately. Deadline failure during required diagnosis may produce `INCOMPLETE` with an explicit reason; do not invent a solver result if it never ran.
 
-Planned routes:
+Implemented routes:
 
-- `POST /api/diagnoses`: bounded closed request; server owns mode validation and run creation. Successful diagnostic outcomes return 200; bad schema 400; oversize 413; disabled live mode 409; missing model configuration 503. Never return raw provider errors.
+- `POST /api/diagnoses`: bounded closed envelope `{mode, planner, fixtureId, input}`; server owns mode validation and run creation. Admission returns HTTP 200 with an initial `running` snapshot, not a finished verdict; the client polls GET. Bad schema returns 400; oversize 413; disabled live mode 451; missing model configuration 503; busy/exhausted admission 429. This local 451 makes no Binance request and is not fresh exchange evidence. Never return raw provider errors.
 - `GET /api/diagnoses/:id`: sanitized result, no raw payload. A random ID is not authorization: bind reads to an HttpOnly session, reject cross-session access, use no-store responses, and expire records after 15 minutes. Missing/expired/unauthorized IDs return 404.
 - `POST /api/diagnoses/:id/cancel`: session-owned cancellation only, no financial effect. Reject cross-origin POST requests; late results cannot overwrite a canceled run.
+- `GET /api/capabilities`: no-store source/planner availability, process budget and persistence limitations. Configured capability is not proof of a genuine model run.
+
+Sessions use signed HttpOnly, SameSite=Strict cookies (Secure for HTTPS). Run retention and session lifetime are 15 minutes; the signing secret and store are process-local and lost on restart. Use one server process, not serverless/multi-replica persistence assumptions. Production POSTs require `MEDER_ALLOWED_ORIGIN` equal to the exact external origin. Before adding a provider key, put the whole deployment and API behind an authenticated private gateway: neither same-origin checks nor session cookies authenticate users.
 
 Planner tools are closed schemas: `getServerTime({})`, `getSymbolMetadata({symbol})`, and `validateAndPatch({diagnosisId, metadataEvidenceId})`. Bind symbol and evidence IDs to immutable server-owned run inputs. A model cannot supply edited metadata or another run's budget. Controller-only fixture loading is never a planner capability.
 
 Budgets: five tool calls total; 20-second overall deadline including cancellation; 12 seconds per model call; 3 seconds per public read. A completed run records sanitized tool summaries, evidence IDs, and decision codes—not hidden chain-of-thought. The real model must actually choose calls; template explanations and deterministic mode are labeled separately.
+
+Model admission additionally permits one concurrent run and a finite process-lifetime allowance, default 10. `MEDER_MODEL_RUN_BUDGET` accepts integers 1–100; invalid values disable model admission. Every admitted run consumes an allowance, including failure/cancellation. Restart resets the allowance and replicas each have their own; this is not authentication, a dollar budget, or durable multi-user admission control. Provider-side spending limits remain necessary.
 
 The prompt must require untrusted-data handling, forbid new capabilities and acceptance claims, preserve the solver verdict, and cite unchecked constraints. Structural tool restrictions—not prompt wording—enforce the boundary.
 
