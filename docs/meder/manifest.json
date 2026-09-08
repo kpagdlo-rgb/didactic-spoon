@@ -11,6 +11,7 @@
     "specification": "SPEC.md",
     "plan": "TODO.md",
     "audit": "PLAN-AUDIT.md",
+    "runbook": "RUNBOOK.md",
     "foundation": "../ordermedic-build-blueprint.md"
   },
   "scope": {
@@ -110,10 +111,18 @@
     "cleanInstall": true,
     "typecheck": true,
     "productionBuild": true,
-    "passingNodeTests": 67,
+    "passingNodeTests": 69,
     "generatedExhaustiveReferenceSolverCases": 1000,
     "passingPlaywrightTests": 7,
+    "passingPlaywrightTestsScope": "previous suite; expanded nine-test run pending",
+    "expandedPlaywrightTests": 9,
+    "expandedPlaywrightResult": "pending",
     "passingDocumentReaderTests": 6,
+    "effectiveSetupRerunSucceeded": true,
+    "npmAuditReportedVulnerabilities": 0,
+    "hostedCiWorkflow": ".github/workflows/meder.yml",
+    "hostedCiResultVerified": false,
+    "repairScreenshotCapturedAndInspected": true,
     "videoRecorded": false
   },
   "releaseClaims": {

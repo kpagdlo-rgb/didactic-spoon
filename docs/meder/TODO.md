@@ -1,6 +1,6 @@
 # Meder — implementation checklist and remaining delivery gates
 
-**Rebuild checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. The parent verification checkpoint reports 67 Node tests (including 1,000 generated exhaustive-reference solver cases), seven Playwright browser tests, six separate Python reader tests, typecheck, and production build passing. Counts are preliminary checkpoint evidence; later additions need their own verification. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), and [spec](SPEC.md); the final `RUNBOOK.md` handoff is tracked below.
+**Rebuild checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. The parent reports 69 Node tests (including 1,000 generated exhaustive-reference solver cases), six separate Python reader tests, typecheck, and production build passing. Seven browser tests passed previously; the expanded nine-test suite is running at this checkpoint and its final result is pending. Effective setup successfully reran npm clean install and Python dependency installation; npm audit reported zero vulnerabilities. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), and [runbook](RUNBOOK.md).
 
 `[x]` means implemented and covered by the checkpoint evidence; `[ ]` means open or explicitly partial. Local tests do not establish a working real-model agent, live exchange access, eligibility, production readiness, or submission. This checklist never authorizes financial access.
 
@@ -62,11 +62,11 @@ Implemented in `app/meder.tsx` and `app/globals.css`, with routes `app/page.tsx`
 - [x] V01: `tests/domain.test.ts`, `domain-hardening.test.ts`: canonical outcomes, exact arithmetic, min/max bounds, disabled rules, unchanged fields, and 1,000 generated exhaustive-reference cases.
 - [x] V02: Domain/server tests cover oversized/hostile inputs, precision, malformed/stale/wrong-symbol evidence, malicious tool arguments, and missing model configuration.
 - [x] V03: `tests/server.test.ts`, `cancellation-hardening.test.ts`, `origin.test.ts`, `model-budget.test.ts`, `model-budget-http.test.ts`: cross-session/run evidence, expiry, cancellation/late results, deadlines, origins, and admission/tool limits.
-- [x] V04: Seven passing `tests/browser/meder.spec.ts` journeys at the checkpoint: repair, budget refusal, ambiguity, off-grid, exact SELL, JSON input, copy/export, source labels and mobile focus.
+- [x] V04: Seven previously passing `tests/browser/meder.spec.ts` journeys: repair, budget refusal, ambiguity, off-grid, exact SELL, JSON input, copy/export, source labels and mobile focus. The keyboard-focus correction was tested. **Expanded-suite result pending:** nine tests are running, including controlled-transport UI cancellation and imported evidence; this is not yet a nine-test pass claim.
 - [ ] V05: Observe and retain a sanitized genuine model-selected tool trace. Adapter/fake-provider tests do not satisfy this gate.
-- [ ] V06: README/manifest/spec/checklist updated; final `RUNBOOK.md` and `SUBMISSION.md` handoff verification remains with the parent.
-- [ ] V07: No short interaction video has been recorded. A screenshot is pending parent capture and would establish appearance only, not this repair → refusal → ambiguity video gate.
-- [ ] V08: Parent owns final integrated diff/secrets review, source commit/publication, and Preview evidence. Browser suite passes at checkpoint; do not confuse that with finished publication. Only branch `hoplite/mylasa-3fbb4210` was reported available; do not assume `main` exists.
+- [ ] V06: README/manifest/spec/checklist and [runbook](RUNBOOK.md) updated; final `SUBMISSION.md` handoff verification remains with the parent.
+- [ ] V07: No short interaction video has been recorded. The parent captured and inspected `.hoplite/artifacts/meder-standalone-repair.png`; this establishes repair-screen appearance, not the repair → refusal → ambiguity video gate.
+- [ ] V08: Parent owns final integrated diff/secrets review and source commit/publication. Setup and repair-screen Preview evidence are established; the expanded browser suite result is pending. `.github/workflows/meder.yml` is added but no hosted CI result is observed. Only branch `hoplite/mylasa-3fbb4210` was reported available; do not assume `main` exists.
 - [ ] V09: Authenticated submission remains a user gate. Preserve public wording “Track A only: video/demo + GitHub, if applicable.” No submission or acceptance receipt has been verified.
 
 ## Continue in dependency order

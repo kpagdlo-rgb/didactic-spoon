@@ -78,6 +78,8 @@ Classify results consistently:
 
 `validation.unchecked` remains separate from the result. A useful local proposal can coexist with unchecked balances, fees, account filters, and dynamic price bounds, but must carry **“Partial validation — exchange acceptance unknown.”** `INCOMPLETE` and `UNRESOLVED` have no actionable patch. Applying/copying a proposal never submits it.
 
+`validation.passedFor` identifies whether passed checks refer to the `original` or `proposal`; `validation.failedFor` remains `original`. A repair preserves the original failure evidence rather than implying the proposed quantity failed those checks. These scopes survive the server's allowlisted report export.
+
 ### Required synthetic examples
 
 Use invented `ABCUSDT`, price `100`, lot max `100`, positive step `0.001`, and valid synthetic price constraints. These are not live Binance filters.
@@ -107,6 +109,8 @@ Implemented routes:
 
 Sessions use signed HttpOnly, SameSite=Strict cookies (Secure for HTTPS). Run retention and session lifetime are 15 minutes; the signing secret and store are process-local and lost on restart. Use one server process, not serverless/multi-replica persistence assumptions. Production POSTs require `MEDER_ALLOWED_ORIGIN` equal to the exact external origin. Before adding a provider key, put the whole deployment and API behind an authenticated private gateway: neither same-origin checks nor session cookies authenticate users.
 
+Development additionally permits exact loopback origin/Host matching and the managed HTTPS preview domain only when the exact platform environment marker is present and the request Host matches. This development exception does not replace the explicit production origin requirement.
+
 Planner tools are closed schemas: `getServerTime({})`, `getSymbolMetadata({symbol})`, and `validateAndPatch({diagnosisId, metadataEvidenceId})`. Bind symbol and evidence IDs to immutable server-owned run inputs. A model cannot supply edited metadata or another run's budget. Controller-only fixture loading is never a planner capability.
 
 Budgets: five tool calls total; 20-second overall deadline including cancellation; 12 seconds per model call; 3 seconds per public read. A completed run records sanitized tool summaries, evidence IDs, and decision codes—not hidden chain-of-thought. The real model must actually choose calls; template explanations and deterministic mode are labeled separately.
@@ -124,6 +128,8 @@ One screen, three regions:
 3. **Proposal:** before/after fields, explicit changed quantity and notional (fees excluded), “Copy proposed JSON,” “Export report.” Disable proposal copy when no valid patch exists; report export remains available.
 
 Use keyboard-operable controls, visible focus, labeled fields, readable contrast, and a polite live region for completion. Do not unexpectedly move focus while diagnosing. Copy/export excludes identifiers, free-text rejection content, credentials, and internal session/evidence tokens; explain any redaction.
+
+The UI exports the server-provided `Snapshot.export`, built from allowlisted fields, rather than serializing the full diagnostic snapshot. Imported evidence remains visibly user-reported; neither import nor export turns it into an observed exchange response.
 
 ## 7. Acceptance and non-goals
 
