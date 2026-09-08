@@ -2,7 +2,11 @@
 
 ## Selected product: Meder
 
-OrderMedic is now named **Meder**. Implementation is not started; the planning pack is:
+OrderMedic is now named **Meder**. A safe, deterministic local MVP is available
+at `/meder` in the Preview reader. It diagnoses synthetic Spot-style `LIMIT`/`GTC`
+orders only: it has no account access, network reads, credentials, signing, or order
+submission capability. It can propose a bounded BUY quantity reduction, but never
+executes or retries an order. The planning pack is:
 
 - [Product/build manifest](docs/meder/MANIFEST.md)
 - [Implementation specification](docs/meder/SPEC.md)
@@ -18,7 +22,8 @@ OrderMedic is now named **Meder**. Implementation is not started; the planning p
 - [Track A ecosystem research and five ideas](docs/track-a-five-ideas-ecosystem-research.md)
 - [Track B research and five concepts](docs/track-b-research-and-five-concepts.md)
 
-These are research and implementation plans, not working financial agents or submitted entries.
+The research documents and Meder plan do not establish competition eligibility or a
+submitted entry. Local validation is partial and never establishes exchange acceptance.
 
 ## Document Preview
 
@@ -28,7 +33,8 @@ python3 -m venv .venv
 .venv/bin/python scripts/docs_preview.py
 ```
 
-Open port 3000. The reader includes each blueprint, side-by-side reading,
+Open port 3000. The reader includes the Meder synthetic diagnostic at `/meder`,
+each blueprint, side-by-side reading,
 an OrderMedic-to-Crash-Lab content diff, and the historical Track A `.old`-to-current diff.
 The blueprint content diff compares different products, not Git revisions.
 Markdown is re-read on every request; refresh after editing. The server serves
