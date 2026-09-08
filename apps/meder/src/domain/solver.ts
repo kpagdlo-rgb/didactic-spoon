@@ -12,7 +12,7 @@ export function solveDiagnosis(input: DiagnosisRequest, evidence: MetadataEviden
   let passed: string[] = [];
   let failed: string[] = [];
   let extras: Partial<Pick<DiagnosisResult, "originalOrder" | "originalNotional" | "bounds" | "evidenceAgeMs">> = {};
-  const result = (state: ResultState, code: string, explanation: string, proposal: Partial<Pick<DiagnosisResult, "patch" | "proposedOrder" | "proposedNotional">> = {}): DiagnosisResult => deepFreeze({ result: state, decisionCode: code, explanation, warning: PARTIAL_VALIDATION_WARNING, validation: { passed, failed, unchecked }, patch: [], ...extras, ...proposal });
+  const result = (state: ResultState, code: string, explanation: string, proposal: Partial<Pick<DiagnosisResult, "patch" | "proposedOrder" | "proposedNotional">> = {}): DiagnosisResult => deepFreeze({ result: state, decisionCode: code, explanation, warning: PARTIAL_VALIDATION_WARNING, validation: { passedFor: state === "REPAIR_PROPOSED" ? "proposal" : "original", failedFor: "original", passed, failed, unchecked }, patch: [], ...extras, ...proposal });
 
   if (input.kind === "ambiguous_submission") return result("UNRESOLVED", "EXECUTION_UNKNOWN", "We cannot confirm whether this order executed. Do not resubmit based on this report. Imported status is contextual, not authoritative reconciliation.");
   extras = { originalOrder: input.order, originalNotional: Rational.decimal(input.order.price).multiply(Rational.decimal(input.order.quantity)).toDecimal() };
@@ -74,7 +74,7 @@ export function exportSafeReport(report: DiagnosisResult): DiagnosisResult {
   const orderFields = (order: Order): Order => ({ symbol: order.symbol, side: order.side, type: order.type, timeInForce: order.timeInForce, price: order.price, quantity: order.quantity });
   return deepFreeze({
     result: report.result, decisionCode: report.decisionCode, explanation: report.explanation, warning: report.warning,
-    validation: { passed: [...report.validation.passed], failed: [...report.validation.failed], unchecked: [...report.validation.unchecked] },
+    validation: { passedFor: report.validation.passedFor, failedFor: report.validation.failedFor, passed: [...report.validation.passed], failed: [...report.validation.failed], unchecked: [...report.validation.unchecked] },
     patch: report.patch.map((patch) => ({ op: patch.op, path: patch.path, from: patch.from, value: patch.value })),
     ...(report.originalOrder ? { originalOrder: orderFields(report.originalOrder) } : {}),
     ...(report.proposedOrder ? { proposedOrder: orderFields(report.proposedOrder) } : {}),

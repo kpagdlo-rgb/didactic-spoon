@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "setup": "python3 -m venv .venv && .venv/bin/pip install -r requirements-preview.txt",
-    "run": ".venv/bin/python scripts/docs_preview.py"
+    "setup": "python3 -m venv .venv && .venv/bin/pip install -r requirements-preview.txt && npm --prefix apps/meder ci",
+    "run": "npm --prefix apps/meder run dev -- --port ${PORT:-3000}"
   },
   "ports": { "default": 3000 }
 }

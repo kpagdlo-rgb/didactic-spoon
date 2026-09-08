@@ -108,7 +108,7 @@
     "off_grid_min"
   ],
   "verificationCheckpoint": {
-    "source": "parent-reported final local rebuild verification on 2026-09-08; not hosted CI or external acceptance",
+    "source": "final local rebuild verification on 2026-09-08; not hosted CI or external acceptance",
     "cleanInstall": true,
     "typecheck": true,
     "productionBuild": true,

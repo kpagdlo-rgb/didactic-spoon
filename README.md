@@ -45,7 +45,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-At the 8 September 2026 rebuild checkpoint, the parent verification run reported
+At the 8 September 2026 rebuild checkpoint, local verification recorded
 69 passing Node tests (including 1,000 generated exhaustive-reference solver cases)
 and passing typecheck/build, nine Playwright tests, and six separate Python reader
 tests. The effective setup script was rerun successfully (npm clean install and

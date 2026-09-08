@@ -81,6 +81,8 @@ export interface DiagnosisResult {
   readonly explanation: string;
   readonly warning: "Partial validation — exchange acceptance unknown.";
   readonly validation: {
+    readonly passedFor: "original" | "proposal";
+    readonly failedFor: "original";
     readonly passed: readonly string[];
     readonly failed: readonly string[];
     readonly unchecked: readonly string[];

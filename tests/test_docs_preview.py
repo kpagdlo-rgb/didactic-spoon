@@ -37,20 +37,12 @@ class PreviewTests(unittest.TestCase):
             self.assertNotIn('<script>', output)
             self.assertIn('&lt;script&gt;', output)
 
-    def test_meder_page_is_a_local_diagnostic(self):
-        output = preview.meder_page()
+    def test_meder_is_a_manifest_not_a_competing_solver(self):
+        output = preview.page('meder')
         self.assertIn('Meder', output)
-        self.assertIn('Diagnose order', output)
-        self.assertIn('Synthetic demo', output)
-        self.assertIn('no account access, network reads, or order submission', output)
-        self.assertIn('REPAIR_PROPOSED', output)
-        self.assertNotIn('https://', output)
-
-    def test_meder_quantity_logic_uses_integer_bounds(self):
-        output = preview.meder_page()
-        self.assertIn('const minFromNotional = divCeil(minN * S, price)', output)
-        self.assertIn('(maxQ === 0n || q <= maxQ)', output)
-        self.assertIn('if (maxQ > 0n)', output)
+        self.assertIn('standalone application in apps/meder', output)
+        self.assertNotIn('<script>', output)
+        self.assertNotIn('id="diagnose"', output)
 
 
 if __name__ == '__main__':

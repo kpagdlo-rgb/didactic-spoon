@@ -3,3 +3,10 @@ __pycache__/
 .hoplite/artifacts/
 .hoplite/attachments/
 .firecrawl/
+node_modules/
+.next/
+*.tsbuildinfo
+playwright-report/
+test-results/
+.env*
+!.env.example

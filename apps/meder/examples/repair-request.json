@@ -1,0 +1,26 @@
+{
+  "mode": "synthetic",
+  "planner": "deterministic",
+  "fixtureId": "repairable",
+  "input": {
+    "kind": "rejection",
+    "order": {
+      "symbol": "ABCUSDT",
+      "side": "BUY",
+      "type": "LIMIT",
+      "timeInForce": "GTC",
+      "price": "100",
+      "quantity": "0.00123"
+    },
+    "observed": {
+      "source": "synthetic_fixture",
+      "code": "-1013",
+      "message": "Filter failure: LOT_SIZE"
+    },
+    "intent": {
+      "quantityTolerance": "allow_all_downward",
+      "maxQuoteNotional": "0.123",
+      "priceTolerance": "exact"
+    }
+  }
+}

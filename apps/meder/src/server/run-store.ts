@@ -3,7 +3,7 @@ import { performance } from 'node:perf_hooks';
 import type { Input, Metadata, Result } from './domain';
 import { FIXTURE_VERSION } from './domain';
 import type { MetadataEvidence } from '../domain';
-import { isValidatedMetadata } from '../domain';
+import { isValidatedMetadata, exportSafeReport } from '../domain';
 import { immutable, LIMITS, SafeError, safeError } from './safety';
 
 export type Planner = 'deterministic' | 'model';
@@ -16,12 +16,23 @@ export type Evidence = {
 export type Snapshot = {
   id: string; status: 'running' | 'completed' | 'canceled' | 'error';
   mode: 'synthetic'; planner: Planner; createdAt: string; expiresAt: string;
+  observedSource: 'synthetic_fixture' | 'redacted_import';
   result: Result | null; error: ReturnType<typeof safeError> | null;
   trace: readonly Trace[]; evidence: readonly (Evidence & { ageMs: number })[]; modelVerified: boolean;
+  export: ExportReport | null;
+};
+export type ExportReport = {
+  product: 'Meder'; version: 1; source: 'synthetic'; fixtureVersion: string;
+  planner: Planner; status: Snapshot['status']; modelVerified: boolean;
+  observedSource: Snapshot['observedSource'];
+  result: Result | null; error: ReturnType<typeof safeError> | null;
+  trace: readonly { tool: string; code: string; at: string }[];
+  provenance: readonly { mode: 'synthetic'; symbol: string; kind: Evidence['kind']; receivedAt: string; responseHash: string }[];
+  redaction: string;
 };
 type EvidenceRecord = { public: Evidence; receivedMono: number; value: Metadata | { fixtureTime: number } };
 type Run = {
-  owner: string; snapshot: Omit<Snapshot, 'evidence'>; input: Input;
+  owner: string; snapshot: Omit<Snapshot, 'evidence' | 'export'>; input: Input;
   fixtureId: string; symbol: string; startedMono: number;
   evidence: Map<string, EvidenceRecord>; controller: AbortController; toolCalls: number;
   expiryTimer?: ReturnType<typeof setTimeout>;
@@ -58,6 +69,7 @@ export class RunStore {
       owner, input: immutable(input), fixtureId, symbol, startedMono: this.clock.mono(),
       evidence: new Map(), controller: new AbortController(), toolCalls: 0,
       snapshot: immutable({ id, status: 'running', mode: 'synthetic', planner,
+        observedSource: input.kind === 'rejection' ? input.observed.source : input.source,
         createdAt: new Date(now).toISOString(), expiresAt: new Date(now + LIMITS.retentionMs).toISOString(),
         result: null, error: null, trace: [], modelVerified: false }),
     });
@@ -72,7 +84,18 @@ export class RunStore {
   }
   snapshot(owner: string, id: string): Snapshot {
     const run = this.get(owner, id);
-    return immutable({ ...run.snapshot, evidence: [...run.evidence.values()].map(item => ({ ...item.public, ageMs: Math.max(0, this.clock.mono() - item.receivedMono) })) });
+    const evidence = [...run.evidence.values()].map(item => ({ ...item.public, ageMs: Math.max(0, this.clock.mono() - item.receivedMono) }));
+    const report: ExportReport | null = run.snapshot.status === 'running' ? null : {
+      product: 'Meder', version: 1, source: 'synthetic', fixtureVersion: FIXTURE_VERSION,
+      planner: run.snapshot.planner, status: run.snapshot.status, modelVerified: run.snapshot.modelVerified,
+      observedSource: run.snapshot.observedSource,
+      result: run.snapshot.result ? exportSafeReport(run.snapshot.result) : null,
+      error: run.snapshot.error ? { code: run.snapshot.error.code, message: run.snapshot.error.message } : null,
+      trace: run.snapshot.trace.map(({ tool, code, at }) => ({ tool, code, at })),
+      provenance: evidence.map(({ mode, symbol, kind, receivedAt, responseHash }) => ({ mode, symbol, kind, receivedAt, responseHash })),
+      redaction: 'Identifiers, pasted rejection text, and private internal tokens are omitted. No financial action occurred.',
+    };
+    return immutable({ ...run.snapshot, evidence, export: report });
   }
   context(owner: string, id: string) {
     const run = this.get(owner, id);
