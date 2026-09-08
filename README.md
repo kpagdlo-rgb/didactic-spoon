@@ -13,6 +13,30 @@ executes or retries an order. The planning pack is:
 - [Prioritized TODO plan](docs/meder/TODO.md)
 - [Machine-readable manifest](docs/meder/manifest.json)
 
+## Private model-enabled Meder deployment
+
+The independent Next.js app in `apps/meder` optionally uses OpenAI Responses when
+both `OPENAI_API_KEY` and `OPENAI_MODEL` are configured **on the server only**.
+Without both values, model mode remains disabled. Before supplying a key, put the
+entire app and its API behind a private authenticated gateway, including preview
+deployments. The app's session cookie isolates diagnoses; it does not authenticate
+users. Same-origin checks are not authentication or protection against anonymous
+provider spending. Do not expose a model-enabled instance to the public internet.
+
+An additional hard admission limit permits **one concurrent model run** and a
+finite process-lifetime budget controlled by `MEDER_MODEL_RUN_BUDGET` (integer
+1–100, default 10; invalid values disable model admission). All sessions share
+this budget. Every admitted run consumes one allowance, including failed or
+canceled runs; there are no refunds or session-based resets. Each run is still
+limited to five tool calls. `/api/capabilities` reports the remaining allowance
+and active count. Busy or exhausted admission returns HTTP 429.
+
+These limits are in-process safeguards, not authentication, a dollar-spend cap,
+or a production deployment claim. Restarting the process resets the allowance;
+multiple workers or replicas each have their own allowance. Use a single process
+behind the authenticated gateway; production or multi-instance use needs shared
+durable admission controls and provider-side spending limits before enablement.
+
 ## Research and original blueprints
 
 - [OrderMedic blueprint](docs/ordermedic-build-blueprint.md)

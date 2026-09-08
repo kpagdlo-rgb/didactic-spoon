@@ -2,6 +2,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { getFixture, parseInput } from './domain';
 import { executeRun, providerConfig } from './planner';
 import { RunStore } from './run-store';
+import { modelBudget } from './model-budget';
 import { validateOrigin } from './origin';
 import { abortable, boundedJson, closed, LIMITS, SafeError, safeError } from './safety';
 
@@ -53,9 +54,15 @@ export function createDiagnosis(request: Request) {
     if (input.kind !== fixture.request.kind || (input.kind === 'rejection' && fixture.metadata?.symbol !== symbol)) throw new SafeError('INVALID_REQUEST');
     const existing = session(request);
     const owner = existing ?? issueSession();
-    const snapshot = store.create(owner, input, fixture.id, symbol, envelope.planner);
-    setTimeout(() => { void executeRun(store, owner, snapshot.id); }, 0);
-    return json(snapshot, 200, owner, origin.protocol === 'https:');
+    const release = envelope.planner === 'model' ? modelBudget.acquire() : () => {};
+    try {
+      const snapshot = store.create(owner, input, fixture.id, symbol, envelope.planner);
+      setTimeout(() => { void executeRun(store, owner, snapshot.id).finally(release); }, 0);
+      return json(snapshot, 200, owner, origin.protocol === 'https:');
+    } catch (error) {
+      release();
+      throw error;
+    }
   });
 }
 export function getDiagnosis(request: Request, id: string) {
@@ -76,7 +83,9 @@ export function cancelDiagnosis(request: Request, id: string) {
   });
 }
 export function capabilities() {
-  return json({ modes: { synthetic: true, live: false }, planners: { deterministic: true, model: !!providerConfig() }, limits: LIMITS,
+  const budget = modelBudget.snapshot();
+  return json({ modes: { synthetic: true, live: false }, planners: { deterministic: true, model: !!providerConfig() && budget.remaining > 0 }, limits: LIMITS,
+    modelBudget: budget,
     integration: 'server-owned function tools (not hosted MCP)',
     liveBlockReason: 'Live public data disabled after sandbox HTTP 451. No Binance requests are made.',
     modelEvidence: 'runtime verification required', persistence: 'Single-process memory; runs expire after 15 minutes and are lost on restart.' });
