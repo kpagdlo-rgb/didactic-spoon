@@ -1,5 +1,16 @@
 # Agent OS research and blueprints
 
+## Selected product: Meder
+
+OrderMedic is now named **Meder**. Implementation is not started; the planning pack is:
+
+- [Product/build manifest](docs/meder/MANIFEST.md)
+- [Implementation specification](docs/meder/SPEC.md)
+- [Prioritized TODO plan](docs/meder/TODO.md)
+- [Machine-readable manifest](docs/meder/manifest.json)
+
+## Research and original blueprints
+
 - [OrderMedic blueprint](docs/ordermedic-build-blueprint.md)
 - [Agent Crash Lab blueprint](docs/agent-crash-lab-build-blueprint.md)
 - [Canonical Track A guide](track-a-agent-os-standalone.md)

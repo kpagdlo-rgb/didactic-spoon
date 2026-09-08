@@ -1,0 +1,67 @@
+{
+  "manifestVersion": 1,
+  "name": "Meder",
+  "slug": "meder",
+  "previousConcept": "OrderMedic",
+  "status": "planned_not_implemented",
+  "tagline": "Order clarity. Without another trade.",
+  "documents": {
+    "overview": "MANIFEST.md",
+    "specification": "SPEC.md",
+    "plan": "TODO.md",
+    "foundation": "../ordermedic-build-blueprint.md"
+  },
+  "scope": {
+    "venue": "Binance Spot",
+    "orderTypes": ["LIMIT"],
+    "timeInForce": ["GTC"],
+    "buyQuantityPolicies": ["exact", "allow_all_downward"],
+    "sellQuantityPolicies": ["exact"],
+    "mutableOrderFields": ["quantity"],
+    "notionalCapExcludesFees": true
+  },
+  "runtime": {
+    "frameworkRecommendation": "Next.js with TypeScript and server route handlers",
+    "versions": "resolve_compatible_versions_and_lock_before_build",
+    "workspaceRecommendation": "apps/meder",
+    "modelProvider": null,
+    "liveModeEnabled": false,
+    "liveModeBlocker": "Recorded sandbox HTTP 451; independently legitimate eligible access required",
+    "fixtureMode": "explicit_selection_only"
+  },
+  "plannedCapabilities": {
+    "publicReads": ["GET /api/v3/time", "GET /api/v3/exchangeInfo"],
+    "financialWrites": [],
+    "authenticatedOrderLookup": false,
+    "walletConnection": false,
+    "signing": false
+  },
+  "limits": {
+    "requestBytes": 16384,
+    "rejectionMessageCharacters": 512,
+    "decimalDigits": 40,
+    "decimalFractionalPlaces": 18,
+    "maxPlannerToolCalls": 5,
+    "diagnosisDeadlineMs": 20000,
+    "modelCallDeadlineMs": 12000,
+    "publicReadDeadlineMs": 3000,
+    "metadataCacheTtlMs": 60000,
+    "reportRetentionMs": 900000
+  },
+  "resultStates": [
+    "ALREADY_VALID",
+    "REPAIR_PROPOSED",
+    "REFUSED_EXACT_TOLERANCE",
+    "REFUSED",
+    "INCOMPLETE",
+    "UNRESOLVED"
+  ],
+  "coreFixtures": ["repairable_quantity", "budget_refusal", "ambiguous_submission"],
+  "releaseClaims": {
+    "implemented": false,
+    "realModelVerified": false,
+    "liveDataVerified": false,
+    "competitionEligibilityVerified": false,
+    "submitted": false
+  }
+}
