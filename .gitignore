@@ -1,0 +1,5 @@
+.venv/
+__pycache__/
+.hoplite/artifacts/
+.hoplite/attachments/
+.firecrawl/

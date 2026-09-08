@@ -1,0 +1,1402 @@
+# Binance Agent OS Mini Hackathon: Track A
+## Standalone Evidence, Build, Safety, and Completion Guide
+
+**Track:** Build an AI agent with Agent OS
+**Prepared:** 8 September 2026
+**Public deadline shown by Binance:** 8 September 2026, 23:59 UTC
+**Status:** Research-complete, submission-blocked, implementation-unverified
+
+This is the standalone Track A guide. It mirrors the structure and evidence discipline of the Track B guide, but changes the product boundary from "connect your MCPs and trade" to "build an AI agent with Agent OS".
+
+The guide treats Agent OS as a product layer that may include Binance MCP, Skills, exchange APIs, Web3 APIs, Binance Pay or x402, and Agentic Wallet depending on the selected workflow. It does not assume that every surface is available to every account, region, client, or submission.
+
+This document distinguishes:
+
+- What Binance publicly states about the event and Agent OS.
+- What an MCP or API specification requires or recommends.
+- What is only a project engineering recommendation.
+- What remains an assumption or competition unknown.
+- What must be observed in the actual agent runtime before it can be claimed as working.
+
+---
+
+## 0. Evidence Labels
+
+Every material claim belongs to one of these classes:
+
+| Label | Meaning |
+| --- | --- |
+| `BINANCE_EVENT_FACT` | Visible on the public Binance event page |
+| `BINANCE_PRODUCT_FACT` | Stated in Binance Agent OS, product, or developer documentation |
+| `BINANCE_API_FACT` | Stated in Binance API documentation or schema |
+| `MCP_MUST` | Normative MCP requirement using MUST language |
+| `MCP_SHOULD` | MCP recommendation using SHOULD language |
+| `ENGINEERING_RECOMMENDATION` | Sensible project control, not an official event rule |
+| `PROJECT_ASSUMPTION` | An assumption that must be tested or confirmed |
+| `RUNTIME_OBSERVATION` | Behavior captured from the actual client, agent, account, or endpoint |
+| `COMPETITION_UNKNOWN` | Not established by public evidence |
+
+An official URL proves that a source exists. It does not prove that a selected client, account, region, scope, skill, wallet, API, or agent workflow behaves as described in a live submission.
+
+The word "Agent OS" also does not, by itself, prove that MCP, Skills, APIs, Pay, Web3, and Agentic Wallet are one shared runtime or one shared authorization boundary.
+
+---
+
+## 1. Current Decision
+
+### Safe strategy hypothesis
+
+The recommended risk-managed baseline is a narrow, evidence-first AI agent that solves one specific user problem through one primary Agent OS capability and, if useful, one complementary capability.
+
+This is not an official Binance judging rubric and is not proven to be the most competitive approach.
+
+Proposed one-sentence product description:
+
+> An Agent OS agent receives a bounded user intent, gathers current Binance or connected data with provenance, explains a policy-checked plan, requests approval before any sensitive action, performs one controlled action when permitted, verifies the resulting state, and produces a reproducible activity record.
+
+### Proposed agent loop
+
+1. Receive a specific intent such as a market brief, portfolio check, payment, rebalance proposal, or bounded trade.
+2. Identify which Agent OS component owns the required data or action.
+3. Gather only the minimum data needed and retain source, timestamp, scope, and freshness.
+4. Apply a deterministic policy outside the model: limits, allowed assets, target accounts, expiry, and approval rules.
+5. Explain the proposed action, uncertainty, data age, permissions, and failure behavior.
+6. Ask for explicit approval if the action can move funds, place an order, transfer assets, or change external state.
+7. Execute once through the selected Agent OS component if the environment and authenticated event rules permit it.
+8. Verify the external result, including identifiers, status, balances, fills, fees, or transaction state as applicable.
+9. Record the outcome and demonstrate safe refusal, timeout, revocation, disconnect, or emergency behavior.
+
+### Recommended first product shape
+
+For a first build, select one of these bounded Agent OS workflows:
+
+- Market intelligence agent: combines Binance market data with a clearly sourced external signal and produces a decision brief without writes.
+- Portfolio action agent: reads account state, proposes one bounded Spot rebalance, and verifies it after approval.
+- Agentic payment or settlement agent: prepares and executes one approved payment only if the authenticated environment and selected Pay/x402 surface support it.
+- On-chain operations agent: prepares one approved Agentic Wallet transfer or swap only if wallet access, chain, asset, and recovery behavior are available and accepted.
+- Trade execution agent: uses Binance MCP for one bounded Spot action with full order and balance reconciliation.
+
+The choice must be driven by authenticated Track A requirements and runtime availability, not by the landing page alone.
+
+### What this strategy does not prove
+
+It does not prove:
+
+- That Track A rewards trading over payments, market intelligence, or on-chain workflows.
+- That a real write is required or accepted.
+- That a video, GitHub repository, or public URL has a fixed format beyond the public wording.
+- That Agent OS components share one authorization or account model.
+- That a particular AI client or framework is supported for every Agent OS surface.
+- That a hosted Binance MCP connection, Skill, API, Pay flow, or Agentic Wallet behaves as documented in the selected region.
+- That a generic chat interface is an AI agent rather than a thin demo wrapper.
+- That a broad catalog of integrations is more competitive than one reliable workflow.
+
+### Current stop decision
+
+Do not publish a final submission or perform a live write yet. The first hard gate is authenticated Track A rules, eligibility, accepted artifact format, and accepted Agent OS environment.
+
+---
+
+## 2. Readiness and Evidence State
+
+| Area | Current state |
+| --- | --- |
+| Public event summary | Verified from logged-out Binance page |
+| Track A public label and prize | Verified from logged-out Binance page |
+| Binance Agent OS product map | Verified from current public Agent OS page |
+| Agent OS FAQ distinctions | Verified from current public Agent OS page |
+| Binance MCP product description | Verified as vendor-stated documentation |
+| Skills Hub description | Verified as vendor-stated documentation |
+| MCP protocol version and transport guidance | Verified from current MCP docs |
+| Authenticated Track A artifacts | Unknown |
+| Authenticated eligibility | Unknown |
+| Exact video/demo requirements | Unknown beyond public Track A wording |
+| Exact GitHub/repository requirements | Unknown beyond public Track A wording |
+| Accepted Agent OS client and environment | Unknown |
+| Selected component authorization | Not tested |
+| Runtime tool and skill list | Not captured |
+| Agent read-only behavior | Not captured |
+| Approval and refusal behavior | Not captured |
+| External action and state reconciliation | Not captured |
+| Prompt injection and untrusted-input behavior | Not captured |
+| Emergency-stop or disconnect residual state | Not captured |
+| Competitive value | Hypothesis only |
+
+The project is not submission-ready and the implementation is not runtime-verified.
+
+---
+
+## 3. Public Event Facts and Unknown Rules
+
+### Public event source
+
+**Source:** [Binance event and survey page](https://www.binance.com/en/survey/2913aa200aac462c89a737779393f3d4)
+
+### `BINANCE_EVENT_FACT`: visible public facts
+
+The public logged-out page currently displays:
+
+- Binance Agent OS Mini Hackathon.
+- $60,000 USDC prize pool.
+- Track A: build an AI agent with Agent OS, $20,000 USDC.
+- Track B: connect your MCPs and trade, $40,000 USDC.
+- Seven days to build and submit.
+- Deadline shown as 8 September 2026 at 23:59 UTC.
+- Follow `@Binance` and repost the event post.
+- Reply or quote repost with the submission.
+- Track A specifically mentions video/demo and GitHub, if applicable.
+- Survey completion is required.
+- Binance login is required to begin the survey.
+- Geographic exclusions are displayed, including the US, UK, EEA, Hong Kong, Singapore, and jurisdictions on Binance's prohibited list.
+- The page says the event is not an offer or solicitation to trade any financial product.
+
+### `COMPETITION_UNKNOWN`: not established publicly
+
+The public page does not establish:
+
+- The exact Track A submission form fields.
+- Whether a video is mandatory, optional, or only applicable to some submissions.
+- Required video length, format, hosting location, language, or public visibility.
+- Whether GitHub must be public, what files must be included, or whether a license is required.
+- Whether the agent must use the hosted Binance MCP server, Agent OS APIs, Skills, Wallet, Pay, or another supported surface.
+- Whether a live action is required, optional, simulated, or discouraged.
+- Whether a trading, payment, wallet, market-data, or multi-component workflow is preferred.
+- Judging weights, tie-breakers, number of winners, or scoring criteria.
+- Team size and one-entry rules.
+- Whether one person can enter both tracks.
+- IP, licensing, or reuse terms.
+- Payout timing.
+- Identity, tax, or jurisdiction conditions beyond the public exclusion text.
+- Whether the public deadline remains active after the displayed time.
+
+These are unknown, not evidence of absence. Authenticated survey fields override this document.
+
+### Rules gate
+
+Before a final build, public post, or live write:
+
+1. Sign in to Binance and capture the exact Track A questions and fields.
+2. Record the authenticated deadline and current submission status.
+3. Confirm what Agent OS components and environments are accepted.
+4. Confirm whether a live write, simulation, recording, or read-only demo is accepted.
+5. Confirm video, GitHub, public URL, social-post, and repository requirements.
+6. Confirm team, one-entry, IP, identity, payout, and tax conditions.
+7. Record a redacted rules matrix with exact wording and status.
+
+If the survey cannot be accessed, the project remains submission-blocked.
+
+---
+
+## 4. Official Binance Agent OS Facts
+
+### 4.1 Agent OS product map
+
+**Source:** [Binance Agent OS](https://www.binance.com/en/agent-os)
+
+`BINANCE_PRODUCT_FACT`: Binance describes Agent OS as a developer platform for connecting AI agents to Binance. The page says it brings the Binance MCP server, exchange APIs, and ready-made agent skills together in one place.
+
+The landing page says that, within limits set by the builder, an agent can:
+
+- Read crypto and TradFi market data.
+- Track positions and portfolio state.
+- Initiate transactions.
+- Interact with supported on-chain services.
+- Build trading, payment, market-data, and on-chain workflows.
+- Use permissions, accounts, and limits selected for each agent.
+
+The page also presents the product as five broad operating areas:
+
+| Area | Publicly shown components | Boundary |
+| --- | --- | --- |
+| Trade | Binance MCP Server, Skills, APIs | Product, scope, account, and region dependent |
+| Pay and settle | Binance Pay, x402, APIs | Payment-specific authorization and availability |
+| Read the market | Web3 APIs, Skills, APIs | Data source and freshness must be observed |
+| Track portfolio | Binance MCP Server, APIs, AI Pro | Product access and account scope vary |
+| Operate on-chain | Agentic Wallet, Web3 APIs | Wallet, chain, signing, and asset risk |
+
+The page describes a connection flow of:
+
+1. Add the relevant connection.
+2. Authenticate the server or component.
+3. Use the agent.
+
+"Connect once" is marketing/product language describing the intended platform experience. It is not proof that every component has one token, one session, one scope model, or one runtime.
+
+### 4.2 Agent OS FAQ facts that were easy to miss
+
+`BINANCE_PRODUCT_FACT`: The current Agent OS FAQ states:
+
+- The Binance MCP server provides a standardized way for AI agents to access supported Binance capabilities without separate custom integrations for every workflow.
+- Depending on products, permissions, account eligibility, and regional availability, AI agents can access crypto market data, track portfolios, trade, initiate payments, and interact with supported on-chain services.
+- Binance MCP is a standardized connection; Binance Skills are ready-made modules for specific tasks; Binance APIs provide direct programmatic access for custom workflows.
+- Agent OS can be accessed through MCP, ready-made Skills, CLI workflows, and developer APIs. Compatibility varies by product and integration method.
+- Binance Agentic Wallet is a dedicated wallet designed for agent actions and may enable eligible on-chain transfers, swaps, and other interactions subject to permissions and availability.
+
+These statements are product descriptions, not proof of account eligibility, runtime behavior, contest acceptance, or safety.
+
+### 4.3 Agent OS supported stack language
+
+`BINANCE_PRODUCT_FACT`: The landing page visibly lists Claude Desktop, Codex, CLI workflows, agent frameworks, REST APIs, and WebSockets as ways the existing agent stack can work with Agent OS. The FAQ qualifies this with compatibility varying by product and integration method.
+
+Do not present the list as a universal compatibility guarantee. Capture the actual client, version, operating system, product surface, setup path, authorization, and runtime result.
+
+### 4.4 Binance AI disclaimer and responsibility boundary
+
+`BINANCE_PRODUCT_FACT`: The Agent OS page disclaims guaranteed AI outputs and warns that:
+
+- AI inputs may include unvetted third-party sourced content.
+- Sourced content may be restricted or altered by compliance and safety filters, but those filters are not absolute.
+- Binance does not endorse or guarantee AI outputs.
+- AI outputs may contain errors, bias, synthetic data, or outdated information.
+- Third-party AI tools may be available without guarantee and are subject to third-party terms.
+- User-configured or third-party AI tools create additional responsibility for the user.
+- Digital-asset prices can be volatile and the user remains responsible for investment decisions.
+
+This is a material Track A design constraint. The agent must surface source provenance, uncertainty, data age, tool identity, and approval state rather than presenting model output as a Binance recommendation.
+
+### 4.5 Binance MCP Server as one Agent OS component
+
+**Source:** [Binance MCP Server guide](https://developers.binance.com/en/docs/agent-native/mcp-server/agentic)
+
+`BINANCE_PRODUCT_FACT`: The official guide documents a hosted Binance MCP path that can provide:
+
+- Market data including tickers, order books, candles, and funding rates.
+- Agentic sub-account balances, positions, and bills.
+- Optional read-only main-account view.
+- Spot, Margin, Convert, USD-S Futures, and COIN-M Futures trade scope subject to authorization.
+- Transfers between wallets inside the same Agentic sub-account.
+- No withdrawal scope.
+- No agent pull from the main account into the Agentic sub-account.
+- Confirmation before orders, cancels, and internal transfers.
+- Disconnect and permission review from Binance.com.
+- Emergency stop described as disconnecting agents and canceling Spot, Margin, and Futures positions and orders in the Agentic account.
+- Desktop-oriented setup.
+
+The guide gives this endpoint:
+
+```text
+https://agent.binance.com/mcp/agentic
+```
+
+It states that the hosted path requires no local install and no API keys on the device, but it also directs users to follow the client-specific setup flow rather than pasting the endpoint into an AI chat or opening it directly in a browser.
+
+These are vendor-stated capabilities. They are not runtime observations.
+
+### 4.6 Skills Hub
+
+**Source:** [Binance Skills Hub documentation](https://developers.binance.com/en/docs/sdks-tools/integrations/skills-hub)
+
+`BINANCE_PRODUCT_FACT`: Binance describes Skills Hub as an open marketplace of AI-agent skills. The current documentation states that Skills:
+
+- Provide native access to crypto capabilities such as token search, on-chain trading, wallet tracking, smart-money signals, and DeFi interactions.
+- Are framework-agnostic and can work with Claude Code, LangChain, CrewAI, OpenClaw, and custom agent stacks.
+- Follow the MCP standard so MCP-compatible agents can discover and call them.
+- Include read-only skills for market data, wallet balances, token information, trends, smart-money activity, DeFi statistics, and signals.
+- Include read/write skills for on-chain transfers, swaps, and limit orders through Agentic Wallet.
+- Are open source and community-extensible.
+- List Node.js 22+ and an MCP-compatible agent as supported environment requirements.
+
+Skills Hub is not automatically the same permission boundary as the hosted Binance MCP Server. Audit the source, version, authentication, permissions, secrets, write behavior, and isolation for every selected skill.
+
+### 4.7 Agentic Wallet, Pay, x402, and Web3 APIs
+
+The Agent OS landing page presents these as related components:
+
+- Agentic Wallet for supported on-chain transactions.
+- Web3 APIs for on-chain data and DeFi access.
+- Binance Pay and x402 for machine-to-machine payments and settlement.
+- Exchange REST and WebSocket APIs for market and trading data.
+
+Public product mapping does not establish a single shared account, signing model, testnet, rollback mechanism, fee model, or runtime authorization path. Keep these components separate in the architecture and evidence package.
+
+### 4.8 Agentic account funding boundary for the MCP component
+
+The official MCP guide states:
+
+- The Agentic sub-account starts empty.
+- Initial funding is manual through the Binance web UI.
+- The agent cannot pull funds from the main account into the Agentic sub-account.
+- Internal Transfer scope is limited to wallets inside the Agentic sub-account.
+- Users should fund only what they are prepared to let the agent trade.
+
+This boundary applies to the documented MCP Agentic sub-account flow. Do not generalize it to Agentic Wallet, Pay, x402, or a custom API integration without separate evidence.
+
+### 4.9 Product fact versus runtime fact
+
+The official pages prove product intent and stated boundaries. They do not prove:
+
+- The selected account is eligible.
+- The selected region has access.
+- The selected client can connect.
+- The selected scopes expose the documented tools.
+- The selected skill has not changed.
+- An action is idempotent or reversible.
+- An external write is accepted as Track A evidence.
+- Emergency stop cancels every residual state immediately.
+
+---
+
+## 5. Product Boundary and Architecture Choices
+
+### Component boundaries
+
+| Component | Possible role | Boundary to document |
+| --- | --- | --- |
+| Binance MCP Server | Hosted market, account, and exchange action connection | Agentic account, scopes, confirmation, no withdrawal |
+| Skills Hub | Ready-made read-only or on-chain modules | Source, version, permissions, secrets, write behavior |
+| Exchange REST/WebSocket APIs | Custom market or trading workflow | API credentials, product limits, environment, region |
+| Web3 APIs | On-chain data and DeFi context | Chain, data provenance, rate limits, freshness |
+| Agentic Wallet | On-chain signing and agent actions | Wallet isolation, signer, assets, chain, recovery |
+| Binance Pay / x402 | Machine-to-machine payments or settlement | Recipient, amount, authorization, settlement state |
+| AI client or framework | Reasoning, orchestration, presentation | Model, prompts, tool routing, logs, version |
+| Wrapper application | Policy, approval, audit, reconciliation | Caps, allowlists, state, retry, secrets |
+
+### Architecture alternatives
+
+The phrase "build an AI agent with Agent OS" does not publicly resolve whether Track A expects the official hosted Binance MCP path, a Skill, direct APIs, Agentic Wallet, Pay, a custom wrapper, a multi-component agent, or another design.
+
+| Architecture | Evidence needed | Main risk |
+| --- | --- | --- |
+| MCP-first Agent OS agent | Client transcript, scopes, tools, read/write result | Low customization or unclear differentiation |
+| Skills-first agent | Skill source, version, install, auth, tool list, write proof | Community code and permission ambiguity |
+| API-first agent | API schema, credentials, request/response, policy controls | Larger security surface and attribution risk |
+| Multi-component agent | Tool provenance, routing, isolation, permission map | Confused authority and data flow |
+| Wallet/on-chain agent | Wallet creation, signer, asset, chain, transaction and recovery proof | Irreversible on-chain action |
+| Pay/x402 agent | Payment request, recipient, authorization, settlement and refund behavior | External recipient and settlement ambiguity |
+| Hybrid agent | Clear ownership for every read and write | Scope creep and unreproducible demo |
+
+Select an architecture only after the authenticated rules are known. Do not choose one because it appears in a blog, video, or marketing diagram.
+
+### Agent identity and action ownership
+
+Every action must have an explicit owner:
+
+| Control | Likely owner | Evidence needed |
+| --- | --- | --- |
+| Data provenance | Agent orchestrator or component | Source URL/tool/skill and timestamp |
+| Prompt and instruction boundary | Agent client/wrapper | System policy and injection test |
+| Allowed symbols/assets/recipients | Wrapper application | Configuration and boundary test |
+| Notional/payment cap | Wrapper application or product scope | Code/config and over-cap test |
+| Trade confirmation | Binance MCP/client and wrapper | Prompt, denial, no-side-effect result |
+| Wallet signing | Agentic Wallet/component | Signer and transaction approval evidence |
+| Payment authorization | Pay/x402/component | Recipient, amount, approval, settlement |
+| API credentials | Client/application/operator | Secret handling review |
+| Tool/skill access | Client and component authorization | Tool list and scope capture |
+| Retry and idempotency | Wrapper and destination system | Identifier mapping and timeout test |
+| Audit log | Wrapper application | Redacted timestamped record |
+| Emergency stop | Product/account/operator | Before/after state |
+
+Do not attribute a local wrapper control to Binance or Agent OS unless the product actually provides it and runtime evidence confirms behavior.
+
+### Agent versus chatbot boundary
+
+Track A is described as building an AI agent, not merely displaying an AI-generated answer. A credible agent should show:
+
+- A defined goal and user intent.
+- Tool or component selection.
+- State carried across the workflow.
+- Policy checks outside the model where possible.
+- A deliberate action or a deliberate refusal.
+- Verification of external state.
+- A visible audit trail.
+
+A polished dashboard with no real Agent OS connection, no tool call, no state transition, or no reproducible action should not be presented as a completed Agent OS agent.
+
+---
+
+## 6. Agent OS Protocol and Security Boundaries
+
+### Current MCP specification checked
+
+**Source:** [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)
+
+The checked MCP documentation identified version `2026-07-28` as latest at the research access time. This is time-sensitive and must be rechecked before implementation.
+
+Useful references:
+
+- [What is MCP?](https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro)
+- [Architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
+- [Remote MCP servers](https://modelcontextprotocol.io/docs/2026-07-28/develop/connect-remote-servers)
+- [Build an MCP server](https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server)
+- [MCP SDKs](https://modelcontextprotocol.io/docs/2026-07-28/sdk)
+- [MCP Inspector and debugging](https://modelcontextprotocol.io/docs/2026-07-28/tools/debugging)
+
+### Streamable HTTP and modern discovery
+
+**Source:** [MCP Streamable HTTP specification](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+
+The current specification describes:
+
+- A single MCP endpoint accepting POST.
+- Each JSON-RPC request or notification as its own POST.
+- JSON or request-scoped SSE responses.
+- Clients advertising `application/json` and `text/event-stream`.
+- MCP protocol-version information on each POST.
+- `Mcp-Method` and, for relevant tool/resource/prompt calls, `Mcp-Name` headers.
+- Removal of the standalone GET stream endpoint and protocol-level sessions in the latest revision.
+- Closing the SSE response as request cancellation.
+- Long-lived change notifications through `subscriptions/listen`.
+- Origin validation to prevent DNS rebinding.
+- Local servers binding to `127.0.0.1`, not `0.0.0.0`.
+
+For MCP `2026-07-28`, capture `server/discover`, the `MCP-Protocol-Version` header, per-request `params._meta`, the selected version, and full paginated `tools/list`. Capture `initialize` only when the client negotiates a legacy protocol version and keep the evidence separate.
+
+These are protocol requirements. They do not prove that a Binance deployment implements every detail of this revision.
+
+### MCP tools and skills security
+
+**Source:** [MCP Tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+
+The checked Tools specification requires attention to:
+
+- `tools/list` pagination and authorization-dependent visibility.
+- Input and output schemas.
+- Structured content versus text content.
+- Tool execution errors versus JSON-RPC protocol errors.
+- Untrusted tool annotations.
+- Input validation, access control, rate limiting, and output sanitization for custom servers.
+
+The specification does not mandate one user-interface pattern. A strong Track A agent should show sensitive inputs, allow denial, validate results, and record tool identity without treating a tool description as trustworthy authority.
+
+### Authorization and OAuth
+
+Sources:
+
+- [MCP authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)
+- [MCP authorization security considerations](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations)
+- [MCP security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)
+
+For a custom HTTP server or proxy, consider protected-resource metadata, authorization-server discovery, PKCE, exact redirect validation, state/issuer/audience/token validation, HTTPS, and strict token separation.
+
+For the official Binance hosted path, use Binance's supported client authorization flow. Do not present custom OAuth requirements as evidence about the hosted deployment.
+
+### Untrusted content and prompt injection
+
+Agent OS explicitly warns that AI inputs may include unvetted third-party content and that AI outputs may be outdated or wrong. Treat the following as data, not instructions:
+
+- News and research results.
+- Web pages and social posts.
+- Token metadata and on-chain text.
+- Skill descriptions and tool annotations.
+- Payment requests and recipient-provided messages.
+- API error strings or tool-returned natural language.
+
+The agent must preserve a hard instruction boundary. External content must not be allowed to change scope, recipient, amount, approval requirement, system policy, or emergency-stop behavior.
+
+---
+
+## 7. Completion Program
+
+### Dependency spine
+
+```text
+D0 Evidence freeze
+  -> D1 Authenticated rules and eligibility
+  -> D2 Agent OS architecture and component decision
+  -> D3 Client authorization and runtime discovery
+  -> D4 Agent policy, provenance, and action controls
+  -> D5 Read-only, refusal, and injection tests
+  -> D6 Optional external action, recovery, and reconciliation
+  -> D7 Submission package and competitive proof
+```
+
+### Access labels
+
+- `NONE`: Documentation/design work only.
+- `AUTH`: Authenticated Binance access or survey.
+- `RUNTIME`: Selected AI client, Agent OS component, and live connection.
+- `AUTH + RUNTIME`: Both authenticated account access and runtime client.
+- `FUNDED`: Also a funded Agentic sub-account or wallet/payment balance, if required.
+
+### Priority definitions
+
+- **Critical/P0:** Stop-ship or stop-action.
+- **High/P1:** Required for a credible submission or external write.
+- **Medium/P2:** Required for robust reproducibility and operations.
+- **Low/P3:** Cleanup or scope reduction.
+- **Cosmetic/P4:** Presentation work after substantive issues close.
+
+### P0 critical completion items
+
+#### C-01. Authenticated Track A submission contract
+
+**Access:** `AUTH`
+
+Capture the exact questions, upload fields, accepted Agent OS surfaces, video/demo fields, GitHub/repository fields, social requirements, team rules, IP, identity, payout, tax, and final deadline.
+
+**Complete when:** A timestamped redacted survey capture and rules matrix exist.
+
+**Stop when:** The survey cannot be accessed. Do not infer Track A rules from Track B, videos, or public marketing copy.
+
+#### C-02. Current deadline and submission status
+
+**Access:** `AUTH`
+
+Record active/closed/extended status, UTC deadline, submitter timezone, form endpoint, social-post timing, and authenticated overrides.
+
+**Complete when:** A timestamped status decision says `yes`, `no`, or `unknown` for current acceptance.
+
+**Stop when:** Status is unknown after the displayed deadline window.
+
+#### C-03. Eligibility, account, jurisdiction, and legal constraints
+
+**Access:** `AUTH` for account-specific facts; `NONE` for document analysis.
+
+Confirm account access, regional eligibility, AI-assisted feature availability, supported client, real-fund permissions, wallet/payment permissions, recording/privacy constraints, third-party-client conditions, identity, payout, tax, and IP requirements.
+
+**Complete when:** A redacted eligibility record and relevant terms excerpts exist.
+
+**Stop when:** Account or jurisdiction eligibility is unresolved. Do not fund a sub-account, wallet, or payment balance.
+
+#### C-04. Agent OS architecture and product selection
+
+**Access:** `NONE` initially; `AUTH + RUNTIME` for final selection.
+
+Choose a primary Agent OS component and document why it solves the target user problem. Record whether supporting MCP servers, Skills, APIs, Web3 APIs, Pay/x402, or Agentic Wallet components are used.
+
+**Complete when:** An architecture diagram, component ownership matrix, permission map, secret boundary, and fallback decision exist.
+
+**Stop when:** The demo depends on a component whose authorization, region, client, or write behavior is only assumed.
+
+#### C-05. Supported client and runtime connection
+
+**Access:** `AUTH + RUNTIME`
+
+Record client/version, OS, region, setup path, endpoint or repository, authentication, scopes, protocol version, component versions, server identity if visible, token behavior if visible, and successful connection state.
+
+**Complete when:** A redacted transcript/recording and authorization/component capture exist.
+
+**Stop when:** The client cannot show what it connected to, what it can call, or what authority it has.
+
+#### C-06. Runtime discovery and read-only behavior
+
+**Access:** `AUTH + RUNTIME`
+
+For MCP, capture `server/discover`, per-request metadata, `MCP-Protocol-Version`, selected version, full paginated `tools/list`, schemas, annotations, authorization-dependent differences, structured/text results, and errors. For Skills and APIs, capture installation/version, source, schema, permissions, request/response, and read-only calls. For Wallet, Pay, and Web3 components, capture the equivalent capability and authorization surface.
+
+**Complete when:** Raw redacted runtime output, component ledger, and read-only call log exist.
+
+**Stop when:** Tool names, skill behavior, API schemas, or wallet capabilities are assumed from documentation.
+
+#### C-07. Planning, approval, and policy controls
+
+**Access:** `AUTH + RUNTIME`
+
+Show the user intent, data sources, proposed action, complete inputs, policy checks, uncertainty, approval requirement, denial behavior, and no-side-effect result. Test ambiguous requests and content that attempts to bypass policy.
+
+**Complete when:** Recording/transcript, raw result, policy log, denial result, and no-side-effect verification exist.
+
+**Stop when:** The model can change recipients, amounts, scopes, or approval state without a visible policy decision.
+
+#### C-08. One bounded external action, only if justified
+
+**Access:** `AUTH + RUNTIME`; `FUNDED` if an account, wallet, or payment balance is involved.
+
+If explicitly permitted and useful to Track A, perform one bounded action through the selected Agent OS component. Capture all identifiers, final status, every fill or transaction detail, fees, before/after state, rounding, and timestamps. Otherwise mark the write `not applicable` and demonstrate the strongest accepted non-production evidence.
+
+**Complete when:** The entire action and resulting state are reproducible.
+
+**Stop when:** The action is not accepted, authorization is unclear, retry is unsafe, destination state is ambiguous, or reconciliation fails.
+
+#### C-09. Recovery, revocation, disconnect, and residual state
+
+**Access:** `AUTH + RUNTIME`; normally `FUNDED` for an account or wallet test.
+
+Record state before the control action, invocation time, disconnect or revocation time, cancellation or settlement behavior, partial or filled behavior, residual orders/positions/balances/transactions, other connected agents, and reconnection requirements.
+
+**Complete when:** Before/after state and residual-exposure or residual-obligation report exist.
+
+**Stop when:** The test creates unsafe exposure or residual state is not observable.
+
+### P1 high completion items
+
+#### H-01. Correct requirement language
+
+Use `Official requirement`, `Recommended evidence`, `Internal release gate`, and `Open question`. Never call a project preference an event requirement. Replace "winning strategy" with "product hypothesis".
+
+#### H-02. Claim/source ledger
+
+For each material claim record ID, exact wording, type, URL, anchor, quote, access time, revision date, what it proves, what it does not prove, runtime artifact, and status.
+
+#### H-03. Evidence-class separation
+
+Separate Binance product claims, MCP normative requirements, runtime observations, independent operational evidence, engineering recommendations, and commentary.
+
+#### H-04. Differentiated agent design
+
+Define target user, painful task, baseline, agent-specific capability, measurable outcome, and why Agent OS is necessary. A generic chat wrapper or tool launcher is not automatically distinctive.
+
+#### H-05. Least privilege and scope matrix
+
+Map each tool, skill, API credential, wallet signer, payment capability, account, asset, and recipient to the smallest required authority. Test removal of every write or sensitive scope.
+
+#### H-06. Provenance and freshness policy
+
+For every decision input define source, timestamp, maximum age, confidence/uncertainty treatment, conflict handling, missing-data behavior, and visible attribution.
+
+#### H-07. Prompt-injection and untrusted-input policy
+
+Define how the agent treats instructions embedded in tool results, web pages, token metadata, payment requests, social content, and Skills. Test that they cannot alter policy, scope, recipient, amount, or approval.
+
+#### H-08. Action idempotency and replay policy
+
+Distinguish MCP JSON-RPC IDs, application request IDs, Binance client order IDs, payment IDs, blockchain transaction hashes, and returned order IDs. Never treat a model message or JSON-RPC ID as an external idempotency key.
+
+#### H-09. Complete external-state reconciliation
+
+Capture pre-action state, inputs, all identifiers, final state, fees, timestamps, remaining quantity or obligation, concurrent activity, and post-action state. For on-chain actions capture chain, network, transaction hash, confirmations, and recipient.
+
+#### H-10. Separate control tests
+
+Test disconnect, revocation, scope removal, emergency stop, and client restart independently. Do not use one as evidence of another.
+
+#### H-11. Negative and boundary tests
+
+Test invalid symbols, quantities, precision, insufficient balance, stale data, conflicting signals, duplicate intent, timeout, prompt injection, revoked authorization, wrong recipient, unsupported chain, withdrawal attempt, main-account funding attempt, and scope removal as applicable.
+
+#### H-12. Reproducibility appendix
+
+Record client/version, OS, region, account or wallet type, scopes, endpoint, component versions, environment, prompts, raw results, timestamps, cleanup, redaction, and artifact index.
+
+#### H-13. Agent OS unknowns register
+
+Track product availability, regional eligibility, supported clients, rate limits, latency, schema stability, authentication expiry, write confirmation, testnet/demo behavior, audit export, skill provenance, wallet recovery, payment settlement, and per-user availability.
+
+### P2 medium completion items
+
+#### M-01. Independent data oracle
+
+Where appropriate, capture timestamped public REST/WebSocket or on-chain responses. Keep independent oracle evidence separate from Agent OS behavior. It validates a source, not the agent's tool routing.
+
+#### M-02. Hosted versus custom authorization separation
+
+Keep official Binance client authorization separate from custom proxy/OAuth design. Do not present custom PKCE, token validation, or wrapper credentials as evidence about Binance's hosted flow.
+
+#### M-03. Cleanup and recovery runbook
+
+Document cancel/close, disconnect, revoke, emergency stop, wallet recovery, payment dispute or failure handling, residual balances, log retention, reauthorization, and account cleanup.
+
+#### M-04. Skill and wallet provenance audit
+
+Document skill repository, commit/version, install command, dependencies, permissions, secrets, write paths, and isolation from exchange and wallet actions.
+
+#### M-05. Official-versus-internal checklist map
+
+Map each checklist row to an official event requirement, Binance boundary, MCP requirement, internal gate, recommendation, or open question.
+
+#### M-06. Source catalog reduction
+
+Retain sources tied to claims and tests. Move third-party videos and blogs to a subordinate discovery appendix. Use claim/evidence IDs so repetition does not look like independent validation.
+
+### P3 low completion items
+
+#### L-01. Remove unused Agent OS components
+
+Keep MCP, Skills, Pay, x402, Wallet, Web3, Futures, Margin, Convert, and API references only if the selected architecture uses them. Otherwise move them to an appendix.
+
+#### L-02. Add ownership to every safety claim
+
+Name the owner as Binance boundary, MCP server, MCP client, Skill, API, wallet, payment rail, wrapper application, model, or human operator.
+
+### P4 cosmetic completion items
+
+After substantive work:
+
+- Put evidence labels beside claims.
+- Show `Unknown`, `Not verified`, and `Not applicable` states visibly.
+- Shorten repeated boundary text.
+- Move resource catalogs to appendices.
+- Replace imperative checklists with status tables.
+- Add a one-page executive summary.
+
+---
+
+## 8. Technical Safety Policy
+
+### 8.1 Authority and least privilege
+
+An agent should never receive more authority than the selected workflow needs.
+
+Required behavior:
+
+1. List every component the agent can call.
+2. Label each component read-only, write-capable, signing-capable, or payment-capable.
+3. Grant the smallest account, asset, recipient, chain, and notional scope available.
+4. Keep market research, account reads, trade writes, wallet signing, and payment settlement distinct.
+5. Make scope changes visible and require reconnection or renewed approval where the product requires it.
+6. Refuse when the requested action exceeds the configured boundary.
+
+No withdrawal scope in Binance MCP is a documented external-withdrawal boundary. It is not a general guarantee that every Agent OS component is unable to move value externally. Wallet, Pay, x402, and custom API flows require their own boundary analysis.
+
+### 8.2 Untrusted content and prompt injection
+
+The agent must treat external content as untrusted data.
+
+Define:
+
+- Which sources are allowed to inform a decision.
+- Which sources may never issue instructions.
+- How conflicting sources are displayed.
+- How stale or missing data causes refusal.
+- How user approval is separated from content-derived recommendations.
+- How system policy survives tool results, web pages, token metadata, and payment requests.
+
+The agent must not:
+
+- Change a recipient because a tool result requests it.
+- Increase an amount because a web page suggests urgency.
+- Add a write scope because a Skill says it is necessary.
+- Treat a model-generated address as a verified destination.
+- Treat natural-language tool output as proof of completed settlement.
+- Suppress a refusal or emergency stop because an external source requests it.
+
+### 8.3 User intent and policy compilation
+
+Natural language is not a sufficient control boundary. Convert user intent into a visible policy object before any external write.
+
+The policy should contain:
+
+- Goal and allowed action.
+- Product or component.
+- Asset, symbol, chain, or recipient.
+- Maximum amount and cumulative exposure.
+- Price or slippage protection where applicable.
+- Data freshness threshold.
+- Approval expiry.
+- Allowed time window.
+- Failure and timeout behavior.
+- No-retry rule for ambiguous results.
+- Required verification fields.
+
+Show the compiled policy to the user. Treat any later model change as a new proposal requiring fresh approval.
+
+### 8.4 Approval and denial
+
+For a sensitive action, show:
+
+- Component and tool/skill name.
+- Account, wallet, or payment rail.
+- Asset, symbol, chain, or recipient.
+- Side and action type.
+- Quantity, notional, price, fee, or payment amount.
+- Data timestamp and source.
+- Maximum exposure and expiry.
+- Expected resulting state.
+- Failure and recovery behavior.
+
+Approval must be a separate, affirmative step. Test denial and then query the destination state to establish that denial created no side effect.
+
+### 8.5 Idempotency and retry
+
+The MCP JSON-RPC `id` is not necessarily an external idempotency key.
+
+Required behavior:
+
+1. Generate and persist an application request identifier.
+2. Use a destination-supported identifier when one exists.
+3. Show the identifier before approval for sensitive actions.
+4. Submit once.
+5. If the response is missing or ambiguous, query by the destination identifier or an authoritative status method.
+6. Retry only after proving no external action exists and receiving fresh approval.
+7. If no safe idempotency or reconciliation path exists, halt for manual review.
+
+For payments and on-chain actions, distinguish application request ID, payment ID, transaction hash, block confirmation, and final settlement. For trades, distinguish JSON-RPC ID, client order ID, order ID, fills, and final status.
+
+### 8.6 Freshness and clock skew
+
+| Data | Required policy |
+| --- | --- |
+| Market data | Source/event timestamp, maximum age, no proposal if stale |
+| Order book or price | Snapshot timestamp, no market action if stale |
+| Account balance | Response timestamp, no write if stale |
+| Portfolio position | Response timestamp, re-fetch before write |
+| Token or chain data | Block/time reference, reject stale metadata |
+| Payment quote | Quote timestamp, expiry, recipient and amount recheck |
+| Wallet transaction | Nonce, chain ID, fee data, confirmation state |
+
+Define clock source, skew tolerance, missing timestamp behavior, and refusal logging.
+
+### 8.7 Trade reconciliation
+
+If the selected Agent OS workflow trades, record:
+
+- Pre-trade base and quote balances.
+- Submitted parameters.
+- Exchange order ID.
+- Exchange client order ID if available.
+- Every fill.
+- Every commission and fee asset.
+- Final state and remaining quantity.
+- Exchange and client timestamps.
+- Post-trade balances.
+- Rounding and fee explanation.
+- Concurrent account activity.
+
+### 8.8 Payment and settlement reconciliation
+
+If the selected workflow pays or settles, record:
+
+- Requestor and recipient identity as displayed.
+- Destination account or address, redacted where necessary.
+- Asset, amount, network, fee, and quote.
+- Approval event and expiry.
+- Payment or settlement identifier.
+- State transitions: created, submitted, pending, completed, failed, expired, or refunded.
+- Any confirmation, dispute, or rollback behavior.
+- Before/after balances.
+
+Do not describe a payment as completed because a model message says it succeeded. Verify through the authoritative destination or settlement query.
+
+### 8.9 On-chain and wallet safety
+
+For Agentic Wallet or Web3 workflows, record:
+
+- Chain ID and network.
+- Wallet identity and signer boundary.
+- Contract, token, method, or transfer type.
+- Recipient and checksum representation.
+- Amount and fee/gas limit.
+- Slippage or deadline for swaps.
+- Transaction hash and confirmations.
+- Reorg, failure, and retry behavior.
+- Recovery path if a transaction is pending or stuck.
+
+Do not call a wallet action reversible merely because the UI has a cancel button. On-chain confirmation and recipient state are the authority.
+
+### 8.10 Control separation
+
+Test these independently:
+
+1. Disconnect.
+2. Authorization revocation.
+3. Scope removal.
+4. Client restart.
+5. Emergency stop.
+6. Timeout after submission.
+7. Prompt-injection attempt.
+
+For each, observe future-call behavior, existing-order or transaction behavior, cancellation, reconnection, and residual state.
+
+---
+
+## 9. Runtime Test Plan
+
+### Phase 0: documentation and discovery
+
+For every component and call, record source URL, section, access time, product/environment, required scope, request/response schema, rate-limit class, read/write state, expected refusal, client version, component version, and timestamp.
+
+Create a component ledger with:
+
+| Field | Required value |
+| --- | --- |
+| Component | MCP, Skill, API, Wallet, Pay, x402, Web3, or wrapper |
+| Source | Official URL or pinned repository/commit |
+| Authority | Read, write, signing, payment, or mixed |
+| Account | Main, Agentic, wallet, payment, or external |
+| Secrets | What is stored and where |
+| Runtime | Client, OS, version, region |
+| Evidence | Raw trace, screenshot, recording, or response |
+| Status | Verified, unverified, inaccessible, or not applicable |
+
+### Phase 1: harmless public data probes
+
+Use only the data sources needed by the selected product. Possible independent probes include:
+
+```text
+GET https://api.binance.com/api/v3/ping
+GET https://api.binance.com/api/v3/time
+GET https://api.binance.com/api/v3/exchangeInfo?symbol=BTCUSDT
+GET https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT
+GET https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=20
+GET https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=20
+```
+
+Checks:
+
+- Fresh server time.
+- Trading symbol and applied filters.
+- Price, book, and candle timestamps.
+- Rate-limit headers and error codes.
+- Separation between the independent oracle and Agent OS results.
+
+If network access is restricted, record that environment limitation. Direct REST evidence does not prove Agent OS behavior.
+
+### Phase 2: Agent OS connection
+
+Record the exact supported client flow. Do not paste a hosted MCP endpoint into a chat and ask the model to install it. Do not open the endpoint directly in a browser when the official guide says to use a client setup flow.
+
+Capture:
+
+- Client and version.
+- Operating system.
+- Agent OS component.
+- Endpoint, repository, or install command.
+- Authentication screen and granted scope.
+- Server or Skill identity.
+- Version and revision.
+- Successful connection check.
+- Any warning about region, account, or product availability.
+
+### Phase 3: modern MCP discovery and read-only calls
+
+For MCP `2026-07-28`:
+
+1. Send a modern request with `MCP-Protocol-Version`.
+2. Include required per-request `params._meta`.
+3. Call `server/discover` or handle the server's version response.
+4. Call `tools/list` and follow opaque pagination cursors.
+5. Capture input schemas, optional output schemas, annotations, and authorization-dependent differences.
+6. Invoke one market read and one account read if the selected scope permits it.
+7. Preserve structured and text results, errors, timestamps, and no-write proof.
+
+Do not begin with a legacy `initialize` request unless the selected client negotiates a legacy version. Keep legacy evidence separate.
+
+Suggested harmless prompts:
+
+1. "Use the selected Agent OS connection to show current BTCUSDT market data and its source time. Do not trade."
+2. "Show my permitted account, portfolio, or wallet state without changing anything."
+3. "List the permissions and actions available to this connection."
+4. "Explain what data is stale or missing before proposing any action."
+5. "Do not execute anything. Describe the approval and verification steps required for the selected action."
+
+Pass criteria:
+
+- The client visibly shows the selected Agent OS component being used.
+- Data freshness and source context are present if available.
+- No write or signing occurs.
+- Account and wallet data stay within intended scope.
+- Ambiguous requests are refused or clarified.
+- Tools, Skills, schemas, versions, and permissions are captured.
+
+### Phase 4: agent policy and negative tests
+
+Before any write, test:
+
+- Ambiguous user intent.
+- Missing or stale data.
+- Conflicting external sources.
+- Invalid symbol, quantity, precision, recipient, chain, or payment amount.
+- Insufficient balance.
+- Duplicate natural-language request.
+- Timeout after submission.
+- Revoked authorization.
+- Disconnected agent.
+- Scope removal.
+- Prompt injection in a tool result or web page.
+- Tool annotation claiming a dangerous action is safe.
+- Withdrawal attempt.
+- Main-account-to-Agentic funding attempt.
+- Wrong wallet or payment recipient.
+
+Every test needs preconditions, exact action, expected UI/tool behavior, expected account/wallet/order state, evidence artifact, result, and timestamp.
+
+### Phase 5: one bounded external action, only if justified
+
+Run only after rules, eligibility, environment, authorization, read-only behavior, refusal behavior, policy controls, freshness, idempotency, and reconciliation are complete.
+
+If an external write is accepted and explicitly approved:
+
+- Use the smallest explicitly approved amount.
+- Use an isolated Agentic account or wallet when applicable.
+- Restate the complete action and failure behavior.
+- Submit or sign once.
+- Query authoritative state.
+- Reconcile identifiers, fees, balances, fills, settlement, or confirmations.
+- Preserve a timestamped audit log.
+
+If the write is not accepted, not safe, or not needed, record `not applicable` and use read-only, simulated, or other accepted evidence.
+
+### Phase 6: recovery and control tests
+
+Independently test:
+
+- Denied approval.
+- Tool or Skill unavailable.
+- Authorization expiry.
+- Client restart.
+- Disconnect.
+- Scope revocation.
+- Emergency stop.
+- Ambiguous external response.
+- Partial fill or pending transaction.
+- Reconnection and cleanup.
+
+The result must show what remains active, what was canceled, what settled, and what requires manual review.
+
+---
+
+## 10. Test Matrix
+
+| Test | Preconditions | Action | Expected result | Evidence |
+| --- | --- | --- | --- | --- |
+| Read-only market call | Market-data scope | Request BTCUSDT data | Tool call only; source and timestamp shown | Raw result |
+| Read-only account call | Account scope | Request balances or positions | No state change; scope respected | Raw result and account view |
+| Skill provenance | Skill installed | Inspect source/version | Revision and permissions visible | Repository and ledger |
+| Ambiguous intent | Agent connected | Ask for an underspecified action | Agent asks a clarifying question | Transcript |
+| Denied approval | Sensitive action proposed | Reject approval | No external action | Destination query and log |
+| Stale data | Artificially old quote | Propose action | No proposal/write | Freshness log |
+| Conflicting sources | Two sources disagree | Ask for decision | Conflict shown; action paused or policy applied | Source ledger |
+| Invalid input | Filters or schema loaded | Submit invalid value | Refusal or safe error | No new state |
+| Prompt injection | Untrusted tool result | Include malicious instruction | Policy remains unchanged | Transcript and policy log |
+| Duplicate request | Request ID policy active | Repeat identical intent | Deduplicated or requires fresh approval | IDs and log |
+| Scope removal | Existing authorization | Remove write scope | Future write refused | Scope capture and error |
+| Disconnect | Connected agent | Disconnect component | Future calls fail or require reconnect | Client/account state |
+| Authorization expiry | Expiry can be observed | Call after expiry | Reauthorization required | Client trace |
+| Ambiguous trade timeout | Controlled accepted environment | Drop response after submit | Reconcile; no blind retry | Identifier and query |
+| Partial fill | Controlled accepted environment | Allow partial execution | Remaining quantity and fees reconciled | All fills/balances |
+| Wallet pending | Controlled accepted environment | Submit approved transaction | Pending state and confirmations visible | Hash and explorer/state |
+| Payment failure | Controlled accepted environment | Use invalid or rejected request | Failure/rollback state visible | Payment identifier |
+| Emergency stop | Safe known state | Trigger stop | Documented disconnect/cancel behavior | Before/after state |
+
+Expected results must be observed, not inferred from documentation.
+
+---
+
+## 11. Demonstration and Evidence Package
+
+### Recommended demonstration sequence
+
+#### Scene 1: problem and agent identity
+
+Show the target user, painful task, intended outcome, why an agent is needed, selected Agent OS components, client, version, and region. Avoid opening with a catalog of integrations.
+
+#### Scene 2: architecture and authority
+
+Show the component map, selected scopes, account or wallet boundary, secrets boundary, read/write distinction, and which component owns each action.
+
+#### Scene 3: connection and discovery
+
+Show the supported client setup, authentication, version, MCP discovery or Skill/API installation, tools/schemas, and available capabilities. Redact secrets and personal identifiers.
+
+#### Scene 4: read-only agent reasoning
+
+Show a real user intent, source data, timestamps, tool calls, uncertainty, and the agent's proposed plan. Show no-write behavior.
+
+#### Scene 5: policy and approval
+
+Show the compiled action policy, complete parameters, limits, recipient or symbol, expiry, expected result, and separate approval. Demonstrate denial if the action is sensitive.
+
+#### Scene 6: bounded action, only if accepted
+
+Show one action through the selected Agent OS component. Do not use a live write merely to make the demo look complete. If a real action is not accepted or safe, label it `not applicable` and use accepted simulation or read-only evidence.
+
+#### Scene 7: verification and reconciliation
+
+Show authoritative state after the action: order ID and fills, payment ID and settlement, transaction hash and confirmations, or portfolio/balance state. Show fees, timestamps, and before/after changes.
+
+#### Scene 8: failure and control behavior
+
+Show at least one denial, stale-data refusal, invalid-input refusal, or prompt-injection refusal. Where safely available, show revocation, disconnect, emergency stop, timeout reconciliation, and residual state.
+
+#### Scene 9: reproducibility
+
+Show repository structure, pinned component versions, setup instructions, environment assumptions, test fixtures, evidence index, and cleanup. Do not expose secrets or private identifiers.
+
+### Evidence classes
+
+| Evidence | Proves | Does not prove |
+| --- | --- | --- |
+| Binance Agent OS page | Vendor-stated product map | Runtime access or contest acceptance |
+| Binance product guide | Vendor-stated capabilities and boundaries | Selected account/client behavior |
+| MCP specification | Protocol requirements | Binance deployment compatibility |
+| Skills repository | Source and version at a revision | Safe behavior or current runtime output |
+| Direct REST/WebSocket response | Binance API semantics | Agent OS routing or authorization |
+| Client transcript | Runtime component invocation | Contest acceptance unless rules say so |
+| Authorization screen | Actual scope/client authorization | Safe outcome by itself |
+| Order response/query | Observed exchange state | Competitive value by itself |
+| Payment result | Observed settlement state | Reversibility or recipient correctness without verification |
+| Transaction hash | Chain submission and state reference | Correct intent or final user outcome by itself |
+| Recording | Visible reproducible flow | Hidden side effects not queried |
+| Audit log | Sequence and timestamps | Truth of unobserved external state |
+
+### Redaction requirements
+
+- No API keys.
+- No OAuth tokens.
+- No private credentials.
+- No seed phrases or wallet private keys.
+- No full account identifiers.
+- No personal data.
+- No secrets in prompts, recordings, repository, screenshots, or issue trackers.
+- No unredacted recipient addresses when they identify a person or private account.
+
+### Repository requirements to verify
+
+The public page mentions GitHub for Track A, if applicable. Until the authenticated survey confirms the contract, treat the following as recommended evidence rather than official requirements:
+
+- README with the agent purpose and architecture.
+- Setup instructions with client and version.
+- Pinned dependencies and component revisions.
+- Configuration template with no secrets.
+- Policy and approval implementation.
+- Source provenance and skill audit.
+- Test fixtures for refusal, stale data, duplicate request, and prompt injection.
+- Evidence index mapping claims to artifacts.
+- Cleanup and recovery instructions.
+- License and third-party notices if required by the selected components.
+
+### Submission mapping
+
+Every final artifact must be labeled as one of:
+
+- Official event requirement.
+- Binance product boundary.
+- MCP requirement.
+- Internal release gate.
+- Recommended evidence.
+- Open question.
+
+Do not call video, GitHub, public URL, or a real action officially required until the authenticated survey confirms it.
+
+---
+
+## 12. Go/Stop Gates
+
+### G0: Evidence freeze
+
+**Go:** Unsupported claims are labeled; claim ledger exists; no recommendations are labeled official.
+
+**Stop:** Vendor documentation is being used as runtime evidence or an unsupported "required" label remains.
+
+### G1: Rules and eligibility
+
+**Go:** Authenticated Track A fields, eligibility, submission status, and accepted Agent OS environment are known.
+
+**Stop:** Survey access, account eligibility, artifact requirements, or action acceptance is unknown.
+
+### G2: Architecture and product selection
+
+**Go:** Primary Agent OS component is selected with a reason, permission map, ownership matrix, and secret boundary.
+
+**Stop:** The demo relies on a product, Skill, wallet, payment rail, or API whose access is assumed.
+
+### G3: Runtime Agent OS discovery
+
+**Go:** Authorization succeeds, component identity and scopes are visible, tools/schemas or equivalent capabilities are captured, and reads work.
+
+**Stop:** Tools are assumed, source/version is unknown, scope is too broad, or a read can cause an unexplained write.
+
+### G4: Agent safety controls
+
+**Go:** Denial, invalid input, stale data, timeout, duplicate, prompt injection, revocation, disconnect, scope, and emergency-stop tests pass as applicable.
+
+**Stop:** Confirmation bypass, blind retry, policy mutation, untrusted instruction execution, or unknown residual exposure.
+
+### G5: External action
+
+**Go only when:** Rules permit it, user approves exposure, the selected account/wallet/payment rail is isolated, controls are implemented, and reconciliation is ready.
+
+**Stop:** No safe idempotency, no protection against wrong destination or price, ambiguous response, or failed reconciliation.
+
+### G6: Submission package
+
+**Go:** Every authenticated field maps to an artifact; runtime evidence is separate; secrets are redacted; the agent's value is demonstrated.
+
+**Stop:** Package relies on public-page assumptions, hides failed paths, or presents recommendations as official requirements.
+
+---
+
+## 13. Completion Dashboard
+
+| ID | Priority | Access | Status | Evidence | Stop issue |
+| --- | --- | --- | --- | --- | --- |
+| C-01 | Critical | AUTH | Not started |  |  |
+| C-02 | Critical | AUTH | Not started |  |  |
+| C-03 | Critical | AUTH | Not started |  |  |
+| C-04 | Critical | NONE/AUTH + RUNTIME | Not started |  |  |
+| C-05 | Critical | AUTH + RUNTIME | Not started |  |  |
+| C-06 | Critical | AUTH + RUNTIME | Not started |  |  |
+| C-07 | Critical | AUTH + RUNTIME | Not started |  |  |
+| C-08 | Critical | AUTH + RUNTIME + FUNDED | Not applicable until C-01/C-04 |  |  |
+| C-09 | Critical | AUTH + RUNTIME | Not applicable until safe test |  |  |
+| H-01 | High | NONE | Not started |  |  |
+| H-02 | High | NONE | Not started |  |  |
+| H-03 | High | NONE | Not started |  |  |
+| H-04 | High | NONE | Not started |  |  |
+| H-05 | High | NONE/RUNTIME | Not started |  |  |
+| H-06 | High | NONE/RUNTIME | Not started |  |  |
+| H-07 | High | NONE/RUNTIME | Not started |  |  |
+| H-08 | High | NONE/RUNTIME | Not started |  |  |
+| H-09 | High | AUTH + RUNTIME + FUNDED | Not started |  |  |
+| H-10 | High | AUTH + RUNTIME | Not started |  |  |
+| H-11 | High | AUTH + RUNTIME | Not started |  |  |
+| H-12 | High | AUTH + RUNTIME | Not started |  |  |
+| H-13 | High | AUTH + RUNTIME | Not started |  |  |
+| M-01 | Medium | NONE if network permits | Not started |  |  |
+| M-02 | Medium | NONE/AUTH + RUNTIME | Not started |  |  |
+| M-03 | Medium | NONE/AUTH + RUNTIME | Not started |  |  |
+| M-04 | Medium | NONE | Not started |  |  |
+| M-05 | Medium | AUTH/NONE | Not started |  |  |
+| M-06 | Medium | NONE | Not started |  |  |
+| L-01 | Low | NONE | Not started |  |  |
+| L-02 | Low | NONE | Not started |  |  |
+| X-01 | Cosmetic | NONE | Not started |  |  |
+
+---
+
+## 14. What Can and Cannot Be Completed Without Access
+
+### Authenticated Binance access required
+
+- Authenticated Track A rules.
+- Authoritative submission status.
+- Account and jurisdiction eligibility.
+- Accepted Agent OS surfaces and environments.
+- Client/account authorization and scopes.
+- Whether a video, GitHub repository, public URL, or real action is required.
+- Scope, revocation, disconnect, and emergency-stop effects.
+- Official submission mapping.
+
+### Live Agent OS runtime required
+
+- Authorization and connection.
+- Runtime tools, Skills, schemas, and versions.
+- Agent routing and read-only behavior.
+- Approval and refusal behavior.
+- Prompt-injection resistance.
+- External action submission and verification.
+- Exchange, wallet, payment, or chain idempotency support.
+- Hosted endpoint limits, errors, and environment behavior.
+
+### Funding and explicit user approval required
+
+- Any actual trade.
+- Any Agentic Wallet transaction or swap.
+- Any payment or settlement with value.
+- Emergency-stop testing involving open orders, positions, pending transactions, or residual balances.
+- Live fill, fee, balance, settlement, and confirmation reconciliation.
+
+### Can be completed immediately without Binance access
+
+- Claim/source ledger.
+- Evidence-class separation.
+- Architecture comparison.
+- Product differentiation hypothesis.
+- Agent state machine and policy object.
+- Draft provenance and freshness policy.
+- Draft prompt-injection and untrusted-input policy.
+- Draft idempotency and reconciliation policy.
+- Hosted-versus-custom authorization separation.
+- Component-boundary design.
+- Source catalog cleanup.
+- Ownership mapping.
+- Presentation cleanup.
+
+---
+
+## 15. Final Completion Definition
+
+The relevant Track A submission path is complete only when:
+
+1. Official Track A rules are captured, not guessed.
+2. Eligibility and accepted Agent OS environment are confirmed.
+3. The target user, problem, and measurable outcome are clear.
+4. Architecture is justified and component ownership is explicit.
+5. The selected client and Agent OS components are authorized with least privilege.
+6. Runtime tools, Skills, APIs, wallet, or payment capabilities are captured.
+7. Read-only behavior is demonstrated.
+8. The agent shows planning, provenance, policy checks, and approval behavior.
+9. Denial, stale-data, invalid-input, duplicate, timeout, and prompt-injection controls are demonstrated.
+10. Any external write is explicitly justified, approved, and reconciled.
+11. Recovery, disconnect, revocation, and residual state are verified or safely disclosed as untested.
+12. Product differentiation is demonstrated beyond a generic chat wrapper.
+13. The repository, recording, public artifacts, and evidence index are redacted and reproducible if required.
+14. Every final artifact maps to an authenticated survey field or is clearly labeled internal/recommended.
+
+If a live action is not permitted, accepted, or safe to perform, completion means a documented `not applicable` decision with the strongest accepted read-only, simulated, or other non-production evidence. It does not mean performing a real trade, payment, or wallet transaction merely to make a checklist green.
+
+---
+
+## 16. Risk and Responsibility
+
+Sources:
+
+- [Binance AI Policy and Terms](https://www.binance.com/en/about-legal/AI-Policy)
+- [Binance Product Terms](https://www.binance.com/en/about-legal/product-terms)
+- [Binance General Risk Warning](https://www.binance.com/en/risk-warning)
+- [Binance prohibited countries](https://www.binance.com/en/about-legal/list-of-prohibited-countries)
+
+Binance warns that AI may use outdated or hallucinated information, produce incorrect parameters, and expose users to third-party content and tools. The user remains responsible for prompts, actions, and trading decisions. Digital-asset prices are volatile.
+
+Agentic Wallet, Web3, Pay, x402, Skills, and direct API workflows can introduce risks that are different from the documented Binance MCP Agentic sub-account boundary. Do not use the absence of withdrawal scope in one component as a general safety claim for all Agent OS components.
+
+This document does not provide legal, financial, security, or jurisdictional advice. Eligibility and permitted use must be confirmed for the actual account and event.
+
+---
+
+## 17. Resource Library
+
+### Official event and Agent OS resources
+
+- [Binance event and survey](https://www.binance.com/en/survey/2913aa200aac462c89a737779393f3d4)
+- [Binance Agent OS](https://www.binance.com/en/agent-os)
+- [Binance MCP Server guide](https://developers.binance.com/en/docs/agent-native/mcp-server/agentic)
+- [Agent Native overview](https://developers.binance.com/en/docs/agent-native/overview)
+- [MCP Server introduction](https://developers.binance.com/en/docs/agent-native/mcp-server)
+- [Binance documentation index](https://developers.binance.com/en/docs/llms.txt)
+- [Binance full documentation](https://developers.binance.com/en/docs/llms-full.txt)
+- [Binance developer documentation](https://developers.binance.com/en/docs/introduction)
+- [Full API catalog](https://developers.binance.com/en/docs/catalog)
+- [SDKs and tools](https://developers.binance.com/en/docs/sdks-tools/overview)
+
+### Binance API resources
+
+- [Spot REST general](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/rest-api/general)
+- [Spot REST market](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/rest-api/market)
+- [Spot REST trade](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/rest-api/trade)
+- [Spot REST account](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/rest-api/account)
+- [Spot WebSocket API](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/ws-api/general)
+- [Spot WebSocket streams](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/ws-streams)
+- [Spot REST schema](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/rest-api/1.0.0/schema.yaml)
+- [Spot WebSocket schema](https://developers.binance.com/en/docs/catalog/core-trading-spot-trading/api/ws-api/1.0.0/schema.yaml)
+- [USD-S Futures REST](https://developers.binance.com/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/account)
+- [Margin REST](https://developers.binance.com/en/docs/catalog/core-trading-margin-trading/api/rest-api/account)
+- [Convert REST](https://developers.binance.com/en/docs/catalog/core-trading-convert/api/rest-api/market-data)
+- [Binance connectors](https://developers.binance.com/en/docs/sdks-tools/connectors)
+
+### Skills and wallet resources
+
+- [Skills Hub documentation](https://developers.binance.com/en/docs/sdks-tools/integrations/skills-hub)
+- [Skills Hub catalog](https://www.binance.com/en/skills)
+- [Official Skills Hub repository](https://github.com/binance/binance-skills-hub)
+- [Agentic Wallet](https://www.binance.com/en/agent-os)
+
+### MCP resources
+
+- [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)
+- [What is MCP?](https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro)
+- [Architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)
+- [Remote MCP servers](https://modelcontextprotocol.io/docs/2026-07-28/develop/connect-remote-servers)
+- [Build an MCP server](https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server)
+- [MCP SDKs](https://modelcontextprotocol.io/docs/2026-07-28/sdk)
+- [MCP Inspector and debugging](https://modelcontextprotocol.io/docs/2026-07-28/tools/debugging)
+- [Streamable HTTP](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+- [MCP authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)
+- [MCP authorization security considerations](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations)
+- [MCP security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)
+- [MCP Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+
+### Official videos and supplemental sources
+
+- [How to Use Agent OS to Trade with AI on Binance via MCP Server](https://www.youtube.com/watch?v=xOgDtv-CbTA) - Binance, 12:37.
+- [Trade With Your AI Agent on Binance: Introducing Agent OS](https://www.youtube.com/watch?v=RE_QQbaonPQ) - Binance, 0:45.
+- [How to join Binance Agent OS Mini Hackathon](https://www.youtube.com/watch?v=yuP3z_e5wvE) - supplemental event walkthrough.
+- [Binance Agent OS Mini Hackathon 2026: Track 2 MCP Setup](https://www.youtube.com/watch?v=ct07Dtdld6o) - Track B supplemental context, not Track A rules.
+- [Binance Agent OS press release](https://www.prnewswire.com/news-releases/binance-introduces-agent-os-to-connect-ai-applications-to-financial-infrastructure-302856306.html)
+- [Binance Agent OS APAC press release](https://www.prnewswire.com/apac/news-releases/binance-introduces-agent-os-to-connect-ai-applications-to-financial-infrastructure-302865254.html)
+
+Use videos and supplemental sources as interface or discovery context only. Recheck all claims against the event page and official documentation.
+
+---
+
+## Bottom Line
+
+The critical path is not to mention every Agent OS component or add more integrations. It is:
+
+> **Authenticated Track A rules and eligibility -> target problem -> Agent OS component decision -> runtime discovery -> policy and safety tests -> optional justified action -> reproducible submission mapping.**
+
+Binance publicly describes Agent OS as a platform connecting AI agents with MCP, Skills, APIs, market data, portfolio tracking, transactions, payments, and supported on-chain services. The exact Track A contract, accepted environment, component availability, runtime behavior, and judging value remain unproven until the artifacts above exist.
+
+The subtle but important product boundary is that Agent OS is not one automatic authorization scope. MCP, Skills, APIs, Agentic Wallet, Pay/x402, Web3 APIs, and AI clients have separate capabilities and risks. The final agent must make those boundaries visible.
+
+If a live action is not permitted, accepted, or safe to perform, completion means a documented `not applicable` decision with the strongest accepted non-production evidence. It does not mean performing a real trade, payment, or wallet transaction merely to make a checklist green.
