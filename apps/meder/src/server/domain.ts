@@ -12,6 +12,8 @@ export function parseInput(value: unknown): Input {
   catch { throw new SafeError('INVALID_REQUEST'); }
 }
 export function getFixture(id: unknown) {
+  if (id === 'repairable_quantity') id = 'repairable';
+  if (id === 'ambiguous_submission') id = 'ambiguous';
   if (!isFixtureId(id)) throw new SafeError('INVALID_REQUEST');
   return loadFixture(id);
 }

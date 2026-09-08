@@ -2,6 +2,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { getFixture, parseInput } from './domain';
 import { executeRun, providerConfig } from './planner';
 import { RunStore } from './run-store';
+import { validateOrigin } from './origin';
 import { abortable, boundedJson, closed, LIMITS, SafeError, safeError } from './safety';
 
 const globalState = globalThis as typeof globalThis & { mederServer?: { store: RunStore; secret: Buffer } };
@@ -18,11 +19,6 @@ function session(request: Request): string | undefined {
   return timingSafeEqual(Buffer.from(mac, 'hex'), Buffer.from(signature(nonce), 'hex')) ? token : undefined;
 }
 function issueSession() { const nonce = randomBytes(32).toString('hex'); return `${nonce}.${signature(nonce)}`; }
-function origin(request: Request) {
-  const supplied = request.headers.get('origin');
-  const expected = new URL(request.url).origin;
-  if (supplied !== expected || request.headers.get('sec-fetch-site') === 'cross-site') throw new SafeError('INVALID_ORIGIN', 403);
-}
 function json(data: unknown, status = 200, cookie?: string, secure = false) {
   const headers: Record<string, string> = { 'content-type': 'application/json', 'cache-control': 'no-store, max-age=0', pragma: 'no-cache', 'x-content-type-options': 'nosniff', vary: 'Cookie, Origin' };
   if (cookie) headers['set-cookie'] = `${COOKIE}=${cookie}; HttpOnly; SameSite=Strict; Path=/; Max-Age=900${secure ? '; Secure' : ''}`;
@@ -44,7 +40,7 @@ function noQuery(request: Request) { if (new URL(request.url).search) throw new 
 
 export function createDiagnosis(request: Request) {
   return boundary(async () => {
-    origin(request); noQuery(request);
+    const origin = validateOrigin(request); noQuery(request);
     const envelope = await body(request);
     closed(envelope, ['mode', 'planner', 'fixtureId', 'input']);
     if (envelope.mode !== 'synthetic' && envelope.mode !== 'live') throw new SafeError('INVALID_REQUEST');
@@ -59,7 +55,7 @@ export function createDiagnosis(request: Request) {
     const owner = existing ?? issueSession();
     const snapshot = store.create(owner, input, fixture.id, symbol, envelope.planner);
     setTimeout(() => { void executeRun(store, owner, snapshot.id); }, 0);
-    return json(snapshot, 200, owner, new URL(request.url).protocol === 'https:');
+    return json(snapshot, 200, owner, origin.protocol === 'https:');
   });
 }
 export function getDiagnosis(request: Request, id: string) {
@@ -72,7 +68,7 @@ export function getDiagnosis(request: Request, id: string) {
 }
 export function cancelDiagnosis(request: Request, id: string) {
   return boundary(async () => {
-    origin(request); noQuery(request);
+    validateOrigin(request); noQuery(request);
     closed(await body(request), []);
     const owner = session(request);
     if (!owner) throw new SafeError('NOT_FOUND', 404);
