@@ -12,6 +12,7 @@
     "plan": "TODO.md",
     "audit": "PLAN-AUDIT.md",
     "runbook": "RUNBOOK.md",
+    "submissionGates": "SUBMISSION.md",
     "foundation": "../ordermedic-build-blueprint.md"
   },
   "scope": {
@@ -107,22 +108,21 @@
     "off_grid_min"
   ],
   "verificationCheckpoint": {
-    "source": "parent-reported rebuild verification on 2026-09-08; preliminary counts, not rolling certification",
+    "source": "parent-reported final local rebuild verification on 2026-09-08; not hosted CI or external acceptance",
     "cleanInstall": true,
     "typecheck": true,
     "productionBuild": true,
     "passingNodeTests": 69,
     "generatedExhaustiveReferenceSolverCases": 1000,
-    "passingPlaywrightTests": 7,
-    "passingPlaywrightTestsScope": "previous suite; expanded nine-test run pending",
-    "expandedPlaywrightTests": 9,
-    "expandedPlaywrightResult": "pending",
+    "passingPlaywrightTests": 9,
     "passingDocumentReaderTests": 6,
     "effectiveSetupRerunSucceeded": true,
-    "npmAuditReportedVulnerabilities": 0,
+    "npmProductionAuditReportedVulnerabilities": 0,
     "hostedCiWorkflow": ".github/workflows/meder.yml",
     "hostedCiResultVerified": false,
     "repairScreenshotCapturedAndInspected": true,
+    "repairScreenshotSharedPrivatelyInThread": true,
+    "managedPreviewHostShapedHttpStatus": 200,
     "videoRecorded": false
   },
   "releaseClaims": {

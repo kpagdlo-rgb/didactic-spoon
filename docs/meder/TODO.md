@@ -1,6 +1,6 @@
 # Meder — implementation checklist and remaining delivery gates
 
-**Rebuild checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. The parent reports 69 Node tests (including 1,000 generated exhaustive-reference solver cases), six separate Python reader tests, typecheck, and production build passing. Seven browser tests passed previously; the expanded nine-test suite is running at this checkpoint and its final result is pending. Effective setup successfully reran npm clean install and Python dependency installation; npm audit reported zero vulnerabilities. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), and [runbook](RUNBOOK.md).
+**Final rebuild verification checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. The parent reports 69 Node tests (including 1,000 generated exhaustive-reference solver cases), nine Playwright tests, six separate Python reader tests, typecheck, and production build passing. Verification followed a successful effective setup rerun of npm clean install and Python dependency installation; the production dependency audit reported zero vulnerabilities. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), [runbook](RUNBOOK.md), and [submission handoff](SUBMISSION.md).
 
 `[x]` means implemented and covered by the checkpoint evidence; `[ ]` means open or explicitly partial. Local tests do not establish a working real-model agent, live exchange access, eligibility, production readiness, or submission. This checklist never authorizes financial access.
 
@@ -16,7 +16,7 @@
 
 | ID | Status | Evidence / remaining gate |
 | --- | --- | --- |
-| G01 | [ ] Open | Authenticated Track A eligibility, read-only/fixture acceptance, accepted demo environment, and private requirements remain unknown. User authorization and confirmation are required; do not retain private form/account data. Final handoff belongs in `SUBMISSION.md`. |
+| G01 | [ ] Open | Authenticated Track A eligibility, read-only/fixture acceptance, accepted demo environment, and private requirements remain unknown. User authorization and confirmation are required; do not retain private form/account data. See [submission handoff](SUBMISSION.md). |
 | G02 | [ ] Partial | OpenAI Responses provider and server-only credential path implemented in `apps/meder/src/server/planner.ts`; currently unconfigured. One genuine permitted tool invocation has not been observed. |
 | G03 | [x] | Synthetic mode is explicit. `src/server/http.ts` rejects live mode locally with 451 and makes no Binance request; no silent fallback or host workaround. |
 | G04 | [x] | `apps/meder/package.json` and `package-lock.json`: Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3; npm clean install/build verified on Node 24. |
@@ -62,16 +62,16 @@ Implemented in `app/meder.tsx` and `app/globals.css`, with routes `app/page.tsx`
 - [x] V01: `tests/domain.test.ts`, `domain-hardening.test.ts`: canonical outcomes, exact arithmetic, min/max bounds, disabled rules, unchanged fields, and 1,000 generated exhaustive-reference cases.
 - [x] V02: Domain/server tests cover oversized/hostile inputs, precision, malformed/stale/wrong-symbol evidence, malicious tool arguments, and missing model configuration.
 - [x] V03: `tests/server.test.ts`, `cancellation-hardening.test.ts`, `origin.test.ts`, `model-budget.test.ts`, `model-budget-http.test.ts`: cross-session/run evidence, expiry, cancellation/late results, deadlines, origins, and admission/tool limits.
-- [x] V04: Seven previously passing `tests/browser/meder.spec.ts` journeys: repair, budget refusal, ambiguity, off-grid, exact SELL, JSON input, copy/export, source labels and mobile focus. The keyboard-focus correction was tested. **Expanded-suite result pending:** nine tests are running, including controlled-transport UI cancellation and imported evidence; this is not yet a nine-test pass claim.
+- [x] V04: Nine passing `tests/browser/meder.spec.ts` tests cover repair, budget refusal, ambiguity, off-grid, exact SELL, JSON input, copy/export, source labels, mobile focus, controlled-transport UI cancellation, and imported evidence. The keyboard-focus correction was tested; backend cancellation is independently covered by server tests.
 - [ ] V05: Observe and retain a sanitized genuine model-selected tool trace. Adapter/fake-provider tests do not satisfy this gate.
-- [ ] V06: README/manifest/spec/checklist and [runbook](RUNBOOK.md) updated; final `SUBMISSION.md` handoff verification remains with the parent.
-- [ ] V07: No short interaction video has been recorded. The parent captured and inspected `.hoplite/artifacts/meder-standalone-repair.png`; this establishes repair-screen appearance, not the repair → refusal → ambiguity video gate.
-- [ ] V08: Parent owns final integrated diff/secrets review and source commit/publication. Setup and repair-screen Preview evidence are established; the expanded browser suite result is pending. `.github/workflows/meder.yml` is added but no hosted CI result is observed. Only branch `hoplite/mylasa-3fbb4210` was reported available; do not assume `main` exists.
+- [x] V06: README/manifest/spec/checklist, [runbook](RUNBOOK.md), and [submission handoff](SUBMISSION.md) document setup, verification, source references, no financial writes, and remaining external gates.
+- [ ] V07: No short interaction video has been recorded. The parent captured, inspected, and shared `.hoplite/artifacts/meder-standalone-repair.png` privately in the thread; this establishes repair-screen appearance, not the repair → refusal → ambiguity video gate. Private screenshot publication is not a public judging artifact.
+- [ ] V08: Parent owns final integrated diff/secrets review and source commit/publication. Setup, all nine browser tests, and repair-screen Preview evidence are established; an actual managed-preview Host-shaped HTTP request returned 200. `.github/workflows/meder.yml` is added but no hosted CI result is observed. Only branch `hoplite/mylasa-3fbb4210` was reported available; do not assume `main` exists.
 - [ ] V09: Authenticated submission remains a user gate. Preserve public wording “Track A only: video/demo + GitHub, if applicable.” No submission or acceptance receipt has been verified.
 
 ## Continue in dependency order
 
-1. Finalize integrated tests, diff review, runbook, and safely publishable appearance/demo evidence.
+1. Complete integrated diff review and source publication. Local tests and runbook are complete; the screenshot is private, and an interaction video remains unrecorded.
 2. If authorized provider configuration becomes available, use a private authenticated instance to verify a genuine tool-selected run; otherwise retain the tested synthetic delivery label.
 3. Resolve G01 through the user's authenticated competition context, not assumptions. Confirm current deadline and accepted artifacts before submission.
 4. Submit only with authorization and eligibility established, then separately record receipt. Build completion cannot force an external gate to pass.

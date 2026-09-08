@@ -21,9 +21,7 @@ excludes fees. The implementation and remaining gates are documented in:
 - [Machine-readable manifest](docs/meder/manifest.json)
 - [Plan drift audit](docs/meder/PLAN-AUDIT.md)
 - [Runbook](docs/meder/RUNBOOK.md)
-
-The final `docs/meder/SUBMISSION.md` handoff is being completed separately;
-see the checklist for its status.
+- [Submission handoff and external gates](docs/meder/SUBMISSION.md)
 
 ## Run and verify Meder
 
@@ -49,12 +47,12 @@ npm run test:browser
 
 At the 8 September 2026 rebuild checkpoint, the parent verification run reported
 69 passing Node tests (including 1,000 generated exhaustive-reference solver cases)
-and passing typecheck/build. Seven Playwright tests passed previously; the expanded
-nine-test suite is running at this checkpoint, so its final result is not yet claimed.
-The six Python reader tests are separate. The effective setup script was rerun
-successfully (npm clean install and Python dependencies; npm audit reported zero
-vulnerabilities). The repair screenshot was captured and inspected; no demonstration
-video or real-model trace has been recorded. `.github/workflows/meder.yml` now
+and passing typecheck/build, nine Playwright tests, and six separate Python reader
+tests. The effective setup script was rerun successfully (npm clean install and
+Python dependencies; the production dependency audit reported zero vulnerabilities).
+An actual managed-preview Host-shaped HTTP request returned 200. The repair
+screenshot was captured, inspected, and shared privately in the thread; no
+demonstration video or real-model trace has been recorded. `.github/workflows/meder.yml` now
 defines hosted CI, but no hosted CI result has been observed.
 
 Live mode is disabled and locally returns HTTP 451 without making a Binance
