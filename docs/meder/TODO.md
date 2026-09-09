@@ -58,6 +58,7 @@ Implemented in `app/meder.tsx` and `app/globals.css`, with routes `app/page.tsx`
 - [x] U03: Quantity-only proposal comparison, copy JSON, redacted report export.
 - [x] U04: Historical ambiguity stays `UNRESOLVED`, without repair/retry action.
 - [x] U05: Loading/cancel/error states, visible focus and narrow-screen keyboard checks; tested browser behavior, not a claim of a comprehensive accessibility audit.
+- [ ] U06: Visual/UX redesign. Audit of the current UI scored 2.2/5 (fixed 1400 px shell with dead side space, 16 simultaneous reassurance sentences, flat typography, no landing page, no motion). Audit, design tokens, component map (Rare UI / paper-design shaders / Lucide), landing spec, Bun-native phased plan and frozen test contract are in [`ui-refactor/`](ui-refactor/README.md). Not started in code.
 
 ## P4 — verification and release evidence
 
