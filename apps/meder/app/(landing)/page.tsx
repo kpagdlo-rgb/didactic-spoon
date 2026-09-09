@@ -12,8 +12,16 @@ import {
 } from "lucide-react";
 import { MeshGradient } from "@paper-design/shaders-react";
 import FluidOrb from "@/components/ui/fluid-orb";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { StepPlayer } from "@/components/ui/step-player";
 import { QuantityCounter } from "@/components/meder/quantity-counter";
+
+const SECTIONS = [
+  { id: "promises", label: "Why" },
+  { id: "how", label: "How" },
+  { id: "wont", label: "Limits" },
+  { id: "final", label: "Try it" },
+];
 
 const reveal = {
   initial: { y: 24, opacity: 0 },
@@ -178,6 +186,7 @@ export default function Landing() {
     <MotionConfig reducedMotion="user">
     <div className="lp">
       <HeroBackdrop />
+      <ScrollProgress sections={SECTIONS} className="lp-progress" aria-label="Page progress" />
       <header className="lp-nav" aria-label="Landing">
         <div className="wordmark">
           <span className="mark" aria-hidden="true">
@@ -227,7 +236,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="lp-section">
+        <section className="lp-section" id="promises">
           <ol className="lp-promises">
             {PROMISES.map((p, i) => (
               <motion.li
@@ -255,7 +264,7 @@ export default function Landing() {
           <Payoff />
         </section>
 
-        <section className="lp-section lp-wont">
+        <section className="lp-section lp-wont" id="wont">
           <motion.h2 className="lp-h2" {...reveal}>
             <TriangleAlert size={20} strokeWidth={2} aria-hidden="true" />
             What it will not do
@@ -267,7 +276,7 @@ export default function Landing() {
           </ul>
         </section>
 
-        <section className="lp-section lp-final">
+        <section className="lp-section lp-final" id="final">
           <motion.div {...reveal}>
             <h2 className="lp-final-title">
               Try the synthetic diagnostic

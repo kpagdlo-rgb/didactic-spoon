@@ -50,7 +50,11 @@ node scripts/verify-motion-csp.mjs   # reduced-motion behaviour + CSP header/vio
 node scripts/probe-width.mjs         # horizontal-overflow probe at 390 px
 node scripts/probe-copy.mjs          # rendered-DOM sweep: no AI claims, no spend phrasing, no numerotation
 node scripts/probe-prod-api.mjs      # live diagnosis POST against a running server (PROBE_BASE, default :3100)
+node scripts/audit-ui.mjs            # rendered-UI audit: overflow, clipped text, overlaps, dead space (6 viewports x 2 routes)
+node scripts/audit-dead-css.mjs     # dead-CSS audit: class selectors and custom properties with no source reference
 ```
+
+The rendered-UI audit runs against `MEDER_TEST_URL` (default `:3100`). It reports decorative bleed (landing glows extend past the viewport by design and are clipped by `.lp` `overflow-x: clip`), and the fixed scroll-progress pill floating over scrolled content (intended overlay UI). The one real overlap found — a closed `<details>` leaking an invisible label into layout — is fixed by the explicit `details:not([open]) > *:not(summary) { display: none; }` rule.
 
 Current gate counts: 87 Node tests, 21 browser tests (20 contract + 1 landing smoke).
 

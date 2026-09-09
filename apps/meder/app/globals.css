@@ -6,7 +6,6 @@
 @theme {
   /* Surfaces — light default, dark via [data-theme=dark] */
   --color-bg:        #f4f3ee;
-  --color-bg-2:      #ebe9e1;
   --color-surface:   #fffefa;
   --color-surface-2: #f6f5ef;
   --color-line:      rgb(32 61 58 / 0.10);
@@ -15,7 +14,6 @@
   /* Ink */
   --color-ink:       #1a2f2c;
   --color-ink-2:     #4b5a57;
-  --color-ink-3:     #7b8886;
 
   /* Accents — meaning is fixed; do not repurpose */
   --color-safe:      #1f6b5c;
@@ -35,13 +33,9 @@
   --text-2xl:  clamp(2.00rem, 1.50rem + 2.20vw, 3.40rem);
   --text-3xl:  clamp(2.80rem, 1.80rem + 4.40vw, 6.00rem);
 
-  /* Fluid page gutter — replaces the fixed max-width shell */
-  --spacing-gutter: clamp(1rem, 4vw, 5rem);
-
   /* Motion */
   --ease-out:   cubic-bezier(.16, 1, .3, 1);
-  --ease-inout: cubic-bezier(.65, 0, .35, 1);
-  --dur-fast: 160ms; --dur-base: 320ms; --dur-slow: 640ms; --dur-reveal: 900ms;
+  --dur-fast: 160ms; --dur-base: 320ms;
 }
 
 [data-theme="dark"] {
@@ -53,7 +47,6 @@
   --color-caution: #e0a95a; --color-caution-soft: rgb(224 169 90 / .14);
   --color-danger: #ef8a7c; --color-danger-soft: rgb(239 138 124 / .14);
   --shadow-1: 0 1px 2px rgb(0 0 0 / .4), 0 8px 24px -12px rgb(0 0 0 / .6);
-  --shadow-2: 0 2px 4px rgb(0 0 0 / .5), 0 24px 64px -24px rgb(0 0 0 / .8);
 }
 
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
@@ -74,36 +67,13 @@
   --pale: #e9f0e6;
   --amber: #805526;
   --danger: #973f32;
-  --background:        oklch(1 0 0);
-  --foreground:        oklch(0.145 0 0);
-  --card-foreground:        oklch(0.145 0 0);
-  --popover:        oklch(1 0 0);
-  --popover-foreground:        oklch(0.145 0 0);
-  --primary:        oklch(0.205 0 0);
-  --primary-foreground:        oklch(0.985 0 0);
-  --secondary:        oklch(0.97 0 0);
-  --secondary-foreground:        oklch(0.205 0 0);
-  --muted-foreground:        oklch(0.556 0 0);
-  --accent:        oklch(0.97 0 0);
-  --accent-foreground:        oklch(0.205 0 0);
-  --destructive:        oklch(0.577 0.245 27.325);
-  --border:        oklch(0.922 0 0);
-  --input:        oklch(0.922 0 0);
-  --ring:        oklch(0.708 0 0);
-  --chart-1:        oklch(0.87 0 0);
-  --chart-2:        oklch(0.556 0 0);
-  --chart-3:        oklch(0.439 0 0);
-  --chart-4:        oklch(0.371 0 0);
-  --chart-5:        oklch(0.269 0 0);
+  /* Tokens feeding the Rare UI scaffold (bg-background, text-foreground,
+     border-border, outline-ring, rounded-lg/2xl utilities) — palette-matched */
+  --background:        #fffefa;
+  --foreground:        #1a2f2c;
+  --border:        rgb(32 61 58 / 0.10);
+  --ring:        #7b8886;
   --radius:        0.625rem;
-  --sidebar:        oklch(0.985 0 0);
-  --sidebar-foreground:        oklch(0.145 0 0);
-  --sidebar-primary:        oklch(0.205 0 0);
-  --sidebar-primary-foreground:        oklch(0.985 0 0);
-  --sidebar-accent:        oklch(0.97 0 0);
-  --sidebar-accent-foreground:        oklch(0.205 0 0);
-  --sidebar-border:        oklch(0.922 0 0);
-  --sidebar-ring:        oklch(0.708 0 0);
 }
 * {
   box-sizing: border-box;
@@ -384,23 +354,9 @@ h3 {
   text-align: center;
   color: var(--muted);
 }
-.idle .orb {
-  display: grid;
-  place-items: center;
-  width: 47px;
-  height: 47px;
-  border: 1px solid #c8d6c8;
-  background: var(--pale);
-  color: var(--green);
-  border-radius: 50%;
-  margin: 0 auto 16px;
-  font:
-    24px var(--font-display),
-    ui-serif, Georgia, serif;
-}
 .idle h3 {
   font:
-    23px var(--font-display),
+    500 var(--text-lg)/1.3 var(--font-display),
     ui-serif, Georgia, serif;
   color: var(--ink);
 }
@@ -654,9 +610,6 @@ output {
   .hero {
     gap: 20px;
   }
-  h1 {
-    font-size: 2.25rem;
-  }
 }
 @media (max-width: 740px) {
   .shell {
@@ -683,9 +636,6 @@ output {
   .hero {
     padding: 28px 0 23px;
   }
-  h1 {
-    font-size: 2.125rem;
-  }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -700,9 +650,6 @@ output {
   }
   .proposal-grid {
     gap: 10px;
-  }
-  .quantity {
-    font-size: 1.5625rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -740,80 +687,20 @@ output {
 }
 
 @theme inline {
-  --font-heading:        var(--font-sans);
   --font-sans:        var(--font-sans);
-  --color-sidebar-ring:        var(--sidebar-ring);
-  --color-sidebar-border:        var(--sidebar-border);
-  --color-sidebar-accent-foreground:        var(--sidebar-accent-foreground);
-  --color-sidebar-accent:        var(--sidebar-accent);
-  --color-sidebar-primary-foreground:        var(--sidebar-primary-foreground);
-  --color-sidebar-primary:        var(--sidebar-primary);
-  --color-sidebar-foreground:        var(--sidebar-foreground);
-  --color-sidebar:        var(--sidebar);
-  --color-chart-5:        var(--chart-5);
-  --color-chart-4:        var(--chart-4);
-  --color-chart-3:        var(--chart-3);
-  --color-chart-2:        var(--chart-2);
-  --color-chart-1:        var(--chart-1);
   --color-ring:        var(--ring);
-  --color-input:        var(--input);
   --color-border:        var(--border);
-  --color-destructive:        var(--destructive);
-  --color-accent-foreground:        var(--accent-foreground);
-  --color-accent:        var(--accent);
-  --color-muted-foreground:        var(--muted-foreground);
-  --color-muted:        var(--muted);
-  --color-secondary-foreground:        var(--secondary-foreground);
-  --color-secondary:        var(--secondary);
-  --color-primary-foreground:        var(--primary-foreground);
-  --color-primary:        var(--primary);
-  --color-popover-foreground:        var(--popover-foreground);
-  --color-popover:        var(--popover);
-  --color-card-foreground:        var(--card-foreground);
-  --color-card:        var(--card);
   --color-foreground:        var(--foreground);
   --color-background:        var(--background);
-  --radius-sm:        calc(var(--radius) * 0.6);
-  --radius-md:        calc(var(--radius) * 0.8);
   --radius-lg:        var(--radius);
-  --radius-xl:        calc(var(--radius) * 1.4);
   --radius-2xl:        calc(var(--radius) * 1.8);
-  --radius-3xl:        calc(var(--radius) * 2.2);
-  --radius-4xl:        calc(var(--radius) * 2.6);
 }
 
 :is(.dark, [data-theme="dark"]) {
-  --background:        oklch(0.145 0 0);
-  --foreground:        oklch(0.985 0 0);
-  --card:        oklch(0.205 0 0);
-  --card-foreground:        oklch(0.985 0 0);
-  --popover:        oklch(0.205 0 0);
-  --popover-foreground:        oklch(0.985 0 0);
-  --primary:        oklch(0.922 0 0);
-  --primary-foreground:        oklch(0.205 0 0);
-  --secondary:        oklch(0.269 0 0);
-  --secondary-foreground:        oklch(0.985 0 0);
-  --muted:        oklch(0.269 0 0);
-  --muted-foreground:        oklch(0.708 0 0);
-  --accent:        oklch(0.269 0 0);
-  --accent-foreground:        oklch(0.985 0 0);
-  --destructive:        oklch(0.704 0.191 22.216);
-  --border:        oklch(1 0 0 / 10%);
-  --input:        oklch(1 0 0 / 15%);
-  --ring:        oklch(0.556 0 0);
-  --chart-1:        oklch(0.87 0 0);
-  --chart-2:        oklch(0.556 0 0);
-  --chart-3:        oklch(0.439 0 0);
-  --chart-4:        oklch(0.371 0 0);
-  --chart-5:        oklch(0.269 0 0);
-  --sidebar:        oklch(0.205 0 0);
-  --sidebar-foreground:        oklch(0.985 0 0);
-  --sidebar-primary:        oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground:        oklch(0.985 0 0);
-  --sidebar-accent:        oklch(0.269 0 0);
-  --sidebar-accent-foreground:        oklch(0.985 0 0);
-  --sidebar-border:        oklch(1 0 0 / 10%);
-  --sidebar-ring:        oklch(0.556 0 0);
+  --background:        #16201e;
+  --foreground:        #eef3f1;
+  --border:        rgb(228 236 233 / 0.10);
+  --ring:        #7f8d8a;
 }
 
 @layer base {
@@ -826,6 +713,11 @@ output {
   html {
     @apply font-sans;
   }
+}
+/* Closed disclosures must not leak layout space (UA hiding is
+   content-visibility based; make the intent explicit). */
+details:not([open]) > *:not(summary) {
+  display: none;
 }
 /* P2 — shader orb, collapsible access panel */
 .orb-shader {
@@ -1004,6 +896,10 @@ output {
 .lp-section {
   position: relative;
   padding: var(--space-8, 2rem) var(--gutter, clamp(1rem, 4vw, 5rem));
+  scroll-margin-top: 24px;
+}
+.lp-progress {
+  z-index: 40;
 }
 .lp-h2 {
   font-family: var(--font-display);
@@ -1132,7 +1028,9 @@ output {
 }
 .lp-footer {
   border-top: 1px solid var(--line);
-  padding: var(--space-6) var(--gutter, clamp(1rem, 4vw, 5rem));
+  /* Keep footer text clear of the fixed scroll-progress pill. */
+  padding: var(--space-6) var(--gutter, clamp(1rem, 4vw, 5rem))
+    calc(var(--space-6) + 84px);
   color: var(--muted);
   font-size: var(--text-sm);
 }
