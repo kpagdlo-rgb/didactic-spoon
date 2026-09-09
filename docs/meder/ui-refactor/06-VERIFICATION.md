@@ -48,7 +48,7 @@ Nothing else.
 ```bash
 bun install --frozen-lockfile
 bun run typecheck
-bun run test                   # bun --bun tsx --test (nested subtests block plain `bun test`, see 05 P0)
+bun run test                   # tsx --test under Node; `bun test` fails on nested subtests, `bun --bun tsx` is broken (see 05 P0)
 bun run build
 bun audit                      # expect: 0 production vulnerabilities; record any dev-only advisories in RUNBOOK
 # dev server via preview_start (Hoplite) or: bun run dev -- --port 3000

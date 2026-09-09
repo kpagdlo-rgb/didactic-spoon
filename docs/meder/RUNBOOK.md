@@ -4,12 +4,12 @@ Meder is a standalone synthetic diagnostic application, not a trading client. Th
 
 ## Run locally
 
-Prerequisites: Node.js 22+ and npm. Verification used Node 24.19.0, Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3, and the committed npm lockfile.
+Prerequisites: Node.js 22+ and Bun 1.3.1+. Verification used Node 24.19.0, Bun 1.3.1, Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3, and the committed `bun.lock`. Bun is the package manager and script runner; the Next.js dev/build runtime remains Node (Bun 1.3.1 crashes running `next build` — see ui-refactor/05-REFACTOR-PLAN.md P0 notes).
 
 ```sh
 cd apps/meder
-npm ci
-npm run dev -- --port 3000
+bun install --frozen-lockfile
+bun run dev -- --port 3000
 ```
 
 Open `http://localhost:3000` or `http://127.0.0.1:3000`. Both `/` and `/meder` open the same application. In Hoplite, use the managed Preview; the repository setup/run configuration and effective project overrides launch this app.
@@ -32,11 +32,11 @@ With the managed development preview already running on port 3000:
 
 ```sh
 cd apps/meder
-npm run typecheck
-npm test
-npm run build
-npx playwright install chromium
-npm run test:browser
+bun run typecheck
+bun run test
+bun run build
+bunx playwright install chromium
+bun run test:browser
 ```
 
 `MEDER_TEST_URL` can target another local test origin. The Playwright configuration starts its own development server only when `CI` is set. `.github/workflows/meder.yml` runs the reader, domain, server, production-build, and browser checks; a committed workflow is not evidence that hosted CI has passed.
@@ -120,9 +120,9 @@ Use a **single long-lived Node process**:
 
 ```sh
 cd apps/meder
-npm ci
-npm run build
-MEDER_ALLOWED_ORIGIN=https://your-private-app.example npm start -- --port 3000
+bun install --frozen-lockfile
+bun run build
+MEDER_ALLOWED_ORIGIN=https://your-private-app.example bun run start -- --port 3000
 ```
 
 Set `MEDER_ALLOWED_ORIGIN` to the exact public origin without a trailing slash. It is required in production, including when TLS terminates at a reverse proxy. HTTPS origins receive Secure cookies. Forwarded host headers alone never authorize a request. Development permits exact loopback Host/origin matches and the explicitly platform-marked managed-preview domain; sibling-host mismatches are rejected.

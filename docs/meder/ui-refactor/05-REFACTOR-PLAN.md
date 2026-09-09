@@ -15,24 +15,24 @@ Why first: every later phase pastes Tailwind-class components. Nothing visual ch
    bun add -d @tailwindcss/postcss tailwindcss postcss
    bun add motion clsx tailwind-merge lucide-react @paper-design/shaders-react
    ```
-   Edit `package.json` scripts:
+   Edit `package.json` scripts (final, verified on this host 2026-09-09):
    ```json
-   "dev": "bun --bun next dev --hostname 0.0.0.0",
-   "build": "bun --bun next build",
-   "start": "bun --bun next start --hostname 0.0.0.0",
-   "typecheck": "bun --bun next typegen && bunx tsc --noEmit",
-   "test": "bun --bun tsx --test tests/*.test.ts",
+   "dev": "next dev --hostname 0.0.0.0",
+   "build": "next build",
+   "start": "next start --hostname 0.0.0.0",
+   "typecheck": "next typegen && bunx tsc --noEmit",
+   "test": "tsx --test tests/*.test.ts",
    "test:browser": "bunx playwright test"
    ```
-   **Verified gotcha (Bun 1.3.1, 2026-09-09):** `bun test tests/domain.test.ts` runs 22/23 — the one failure is `NotImplementedError: test() inside another test() is not yet implemented in Bun` (oven-sh/bun#5090). Nested `t.test()` subtests are used in `tests/domain.test.ts` (1 site) and `tests/model-access-http.test.ts` (10 sites). The same file passes under `npx tsx --test`. Therefore in P0 keep
-   ```json
-   "test": "bun --bun tsx --test tests/*.test.ts"
-   ```
-   (Bun runtime, Node test runner semantics) and open a follow-up to migrate those two files to `bun:test` `describe/test` blocks. Do not flatten or delete the subtests to make `bun test` pass.
+   **Verified gotchas (Bun 1.3.1 on this Modal sandbox, 2026-09-09):**
+   1. `bun --bun next build` crashes with SIGILL — a Bun runtime bug (bun.report/1.3.1/…), persistent across retries. `next dev/build/start` therefore run under the Node 24 runtime; Bun is still the package manager, lockfile owner and script runner (`bun run dev` → Node child). Re-test `bun --bun` on a newer Bun before assuming it is still broken.
+   2. `bun --bun tsx --test` fails: tsx cannot resolve its own `./cjs/index.cjs` entry under Bun. Plain `tsx --test` (Node) is the test command.
+   3. `bun test` runs 22/23 of `tests/domain.test.ts` — the failure is `NotImplementedError: test() inside another test()` (oven-sh/bun#5090). Nested `t.test()` subtests exist in `tests/domain.test.ts` (1 site) and `tests/model-access-http.test.ts` (10 sites). Do not flatten or delete subtests to make `bun test` pass; migrating those files to `bun:test` `describe/test` blocks is a separate follow-up.
+   4. `shadcn init` adds two packages you must delete: `cn` (a bogus runtime dep — the real `cn` helper is `lib/utils.ts`) and `shadcn` (the CLI itself, never needed as a dependency).
 
 2. **Repo wiring** (root):
    - `.hoplite/settings.json` → `"setup": "python3 -m venv .venv && .venv/bin/pip install -r requirements-preview.txt && cd apps/meder && bun install --frozen-lockfile"`, `"run": "cd apps/meder && bun run dev -- --port ${PORT:-3000}"`.
-   - `.github/workflows/meder.yml` → replace `actions/setup-node` + `npm ci` with `oven-sh/setup-bun@v2` + `bun install --frozen-lockfile`; scripts via `bun run …`; Playwright: `bunx playwright install --with-deps chromium`. Keep the Node setup only if `next build` needs Node (it does not with `bun --bun`; but keep `node-version: 24` available as fallback for Playwright's own runtime).
+   - `.github/workflows/meder.yml` → replace `actions/setup-node` + `npm ci` with `oven-sh/setup-bun@v2` + `bun install --frozen-lockfile`; scripts via `bun run …`; Playwright: `bunx playwright install --with-deps chromium`. Keep `actions/setup-node` (Node 24) too, because `next build` runs under Node (`bun --bun next build` SIGILLs on this host; workflow may also need Node for Playwright's runtime). **Done and verified** — current `meder.yml` is the reference.
    - `docs/meder/RUNBOOK.md` → replace npm commands.
 
 3. **Tailwind v4 + alias + cn**
