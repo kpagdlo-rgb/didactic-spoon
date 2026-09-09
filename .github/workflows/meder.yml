@@ -30,17 +30,17 @@ jobs:
         working-directory: apps/meder
       - run: bun run typecheck && bun run test && bun run build
         working-directory: apps/meder
-      # The runner's Google-Chrome apt source intermittently (and at times
-      # persistently) serves a hash-sum-mismatched index, which fails
-      # `--with-deps`. Playwright needs only Ubuntu packages from that step,
-      # never Google Chrome, so mask the source and install deps + browser
-      # separately. Retry once for CDN wobble.
+      # The runner's Google-Chrome apt source serves a hash-sum-mismatched
+      # index (present on ubuntu-24.04 as .list or deb822 .sources), which
+      # fails `--with-deps`. Playwright needs only Ubuntu packages from that
+      # step, never Google Chrome, so remove any apt source mentioning
+      # dl.google.com, then install deps + browser separately.
       - name: Install Playwright Chromium
         working-directory: apps/meder
         run: |
           for attempt in 1 2; do
-            sudo rm -f /etc/apt/sources.list.d/google-chrome.list \
-              /etc/apt/sources.list.d/google*.list 2>/dev/null || true
+            sudo grep -rl "dl\.google\.com" /etc/apt/sources.list \
+              /etc/apt/sources.list.d/ 2>/dev/null | sudo xargs -r rm -f
             if bunx playwright install-deps chromium \
               && bunx playwright install chromium; then
               exit 0
