@@ -140,3 +140,19 @@ P4 feat(meder): dark theme, micro-interactions, mobile scroll-to-result, css cle
 - Run `bunx playwright test tests/browser/meder.spec.ts -g "<name>"` for the single journey you touched; run the full suite only at the phase gate.
 - If a Rare UI component's generated file is >300 lines, do not read it; trust the documented props (03) and only open it when a prop is missing.
 - Never "fix" a failing test by changing the assertion unless 06 says the label legitimately moved.
+
+## P5 — Consolidation finish (executed after P4; amendments verified empirically)
+
+Shipped in the P5 commits (`ab6500b` + contrast follow-up):
+
+- **Component extraction** (P2 leftover): `app/app/meder.tsx` split into `components/meder/{meder-types,theme-toggle,top-bar,order-form,result-panel,proposal-panel,safety-strip,field-help,model-access-panel}.tsx`. All frozen selectors preserved; 21/21 browser tests green without test edits.
+- **Scenario radio cards** (P2 leftover): `role="radiogroup"` cards with the frozen `#fixture` select kept in sync as `sr-only`. Two contract collisions found and fixed: Playwright `getByLabel` also matches `aria-label` on non-labelable elements, so the radiogroup is named "Scenario choices"; tooltip triggers are named "What this field means" (any field-label substring collides with non-exact `getByLabel`).
+- **Runtime & data disclosure** (P4 leftover): implemented **default-open**, not collapsed — verified empirically that Playwright `selectOption` waits for visibility (a collapsed disclosure hangs `model-access.spec.ts` for 30 s). Compaction is visual only.
+- **Disclaimer consolidation** (P1.3): per-label tooltips (Base UI tooltip hand-written to match base-nova — the shadcn registry fetch hangs from this sandbox), SafetyStrip + "About safety" sheet holding every removed reassurance sentence, Beaker chip on the form header, `.safety-pill` and old `.footer` removed.
+- **ModelAccessPanel Sheet: rejected.** `model-access.spec.ts` re-navigates mid-test (`page.goto("/app")` at line 221) and asserts panel content immediately; a closed Sheet would need click-through edits beyond the contract's one remaining permitted edit. The `<details open>` consolidation stays.
+- **AnimatePresence** (P2 leftover): diagnosis-card view transitions (`mode="wait"`, 160 ms, `MotionConfig reducedMotion="user"`).
+- **CodeBlock in-app** (P2 leftover): proposed JSON renders in the Rare UI CodeBlock; the frozen `<pre data-testid="proposal-json">` stays byte-exact as `sr-only`.
+- **MeshGradient hero** (P3 leftover): wired with three-way gating — WebGL context probe, `max-width: 767px`, `prefers-reduced-motion` — static CSS glows otherwise. Without the probe, GL-less browsers log "Paper Shaders: WebGL is not supported" to the console.
+- **Contrast fixes from axe audit** (WCAG 2 AA, `scripts/verify-a11y.mjs`): `.field` controls and `.mode-copy`/`.comparison`/`.notice`/`.error-box`/`pre` no longer hardcode light backgrounds (dark-mode inputs measured 1.11:1); `.primary` keeps a deep-green surface in dark; muted-on-tint labels (`.scenario-card.selected .scenario-detail`, `.comparison .mini-label`) use `--color-ink-2`; landing attribution line lost its opacity fade.
+- **Also fixed:** leftover `.slice(5)` mangling the scenario label in the evidence row; the shadcn `.dark` palette now also applies to `[data-theme="dark"]`; CI `webServer` uses `bun run dev`; `cn` package removed again — the shadcn CLI re-adds it on every invocation, check after any `shadcn add`.
+- **Contract bug found via tests:** `.sr-only` loses `width`/`padding` to `.field select` specificity — the invisible contract select rendered full-width and caused the 390 px overflow. Fixed with a `.field select.sr-only` override; caught by `scripts/probe-width.mjs` and the mobile overflow test.

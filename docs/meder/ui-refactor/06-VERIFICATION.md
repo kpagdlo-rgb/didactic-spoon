@@ -81,6 +81,23 @@ Expected baseline before P0: 87 Node tests, 20 browser tests, typecheck and buil
 - No change under `src/server/*` or `src/domain/*` except imports (diff must be empty there: `git diff --stat main -- apps/meder/src`).
 - Hosted CI (`.github/workflows/meder.yml`) green on Bun.
 
+### Recorded outcomes (P5 close-out, branch `hoplite/mylasa-3fbb4210`)
+
+| Gate | Result |
+| --- | --- |
+| `bun run typecheck` | pass |
+| `bun run test` (Node, tsx) | 87 pass / 0 fail |
+| `bun run test:browser` (Playwright) | 21 pass / 0 fail (incl. new `landing.spec.ts` smoke test) |
+| `bun run build` (clean `.next`) | pass — `/`, `/app` static; `/meder` redirect; APIs dynamic |
+| `bun audit` | 0 vulnerabilities |
+| axe-core WCAG 2 A/AA (`scripts/verify-a11y.mjs`) | 0 serious/critical on /app idle+result × light/dark and / |
+| Reduced motion + CSP (`scripts/verify-motion-csp.mjs`) | counter settles exact; 0 running CSS animations after settle; landing mounts no shader canvas; CSP header present on both routes; 0 violations |
+| Lighthouse desktop (`bunx lighthouse@12`, Playwright Chromium) | `/` performance 99, accessibility 100; `/app` performance 97, accessibility 100 |
+| Screenshots (`scripts/capture-matrix.mjs`) | 9 images in `.hoplite/artifacts/screenshots/`: app-{1920,390}-{light,dark}-{idle,result}.png + landing-1920-full.png |
+| 390 px overflow | `scrollWidth === innerWidth` at 390×844 (probe + mobile test) |
+
+Deviations from the letter of section D: no PR exists because the repository has no base branch (only `hoplite/mylasa-3fbb4210`); the screenshots live in `.hoplite/artifacts/` instead. The "diff empty under src/" check is against the branch point `85cce3c` rather than `main`.
+
 ## E. What this refactor does NOT prove
 
 Pretty does not mean verified. The redesign changes no diagnostic behaviour; it does not establish real-model operation, live exchange access, submission acceptance or eligibility. Keep those statements in `SUBMISSION.md`/`TODO.md` exactly as they are.

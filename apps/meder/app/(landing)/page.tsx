@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, MotionConfig, useReducedMotion } from "motion/react";
 import {
   ArrowRight,
   Beaker,
@@ -175,6 +175,7 @@ function Payoff() {
 
 export default function Landing() {
   return (
+    <MotionConfig reducedMotion="user">
     <div className="lp">
       <HeroBackdrop />
       <header className="lp-nav" aria-label="Landing">
@@ -290,5 +291,6 @@ export default function Landing() {
         </p>
       </footer>
     </div>
+    </MotionConfig>
   );
 }

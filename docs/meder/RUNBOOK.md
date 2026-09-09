@@ -41,6 +41,17 @@ bun run test:browser
 
 `MEDER_TEST_URL` can target another local test origin. The Playwright configuration starts its own development server only when `CI` is set. `.github/workflows/meder.yml` runs the reader, domain, server, production-build, and browser checks; a committed workflow is not evidence that hosted CI has passed.
 
+Post-redesign verification helpers (require the dev server on port 3000):
+
+```sh
+node scripts/capture-matrix.mjs      # 8 app screenshots (light/dark x idle/result x 1920/390) + landing full-page
+node scripts/verify-a11y.mjs         # axe-core WCAG 2 A/AA on both routes, both themes
+node scripts/verify-motion-csp.mjs   # reduced-motion behaviour + CSP header/violation check
+node scripts/probe-width.mjs         # horizontal-overflow probe at 390 px
+```
+
+Current gate counts: 87 Node tests, 21 browser tests (20 contract + 1 landing smoke).
+
 Historical baseline `4a576289e26afdac6b8281b1c22011cdc2cf397c` recorded 69 Node, nine browser and six reader tests plus typecheck/build passing. Its [hosted CI run 34292462782 passed](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). The later private model-access checkpoint separately passed **87 Node tests, 20 browser tests, six reader tests, typecheck, and production build**, with zero reported production dependency vulnerabilities. Access UI cases use controlled transport; server tests exercise the real handlers with injected provider responses. These checks do not prove genuine provider use or hosted CI for the later revision. Submission is USER-REPORTED at `2026-09-08T23:59:39.346Z`; see [submission history](SUBMISSION.md) for unverified receipt/eligibility gates and the historical draft. No finalized demo video is verified: a stalled attempt was stopped and its private artifact remains unverified.
 
 Repository reader regression tests:

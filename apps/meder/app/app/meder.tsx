@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { MotionConfig } from "motion/react";
 import { parseClosedJson } from "../../src/domain/json";
 import { useModelAccess } from "../../src/client/use-model-access";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -263,6 +264,7 @@ export default function Meder() {
     };
 
   return (
+    <MotionConfig reducedMotion="user">
     <TooltipProvider>
       <div className="shell">
         <a href="#order-input" className="skip">
@@ -336,5 +338,6 @@ export default function Meder() {
         <SafetyStrip />
       </div>
     </TooltipProvider>
+    </MotionConfig>
   );
 }
