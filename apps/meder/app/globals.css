@@ -287,13 +287,6 @@ h1 em {
   align-items: center;
   gap: 10px;
 }
-.step {
-  font:
-    var(--text-xs)/1.6 var(--font-mono),
-    ui-monospace, monospace;
-  color: #62736a;
-  margin-right: 9px;
-}
 h2 {
   font-size: var(--text-base);
   font-weight: 600;
@@ -821,4 +814,28 @@ output {
   html {
     @apply font-sans;
   }
+}
+/* P2 — shader orb, collapsible access panel */
+.orb-shader {
+  margin: 0 auto var(--space-4, 1rem);
+  filter: saturate(0.9);
+}
+.idle {
+  padding-top: var(--space-6);
+}
+.access {
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-4, 1rem);
+  padding-top: var(--space-3, 0.75rem);
+}
+.access > summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+  list-style-position: outside;
+  margin-left: 1.1em;
+}
+.access > summary:hover {
+  color: var(--green);
 }

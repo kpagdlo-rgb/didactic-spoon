@@ -5,6 +5,9 @@ import type { DiagnosisResult } from "../src/domain/types";
 import { parseClosedJson } from "../src/domain/json";
 import { useModelAccess } from "../src/client/use-model-access";
 import { ModelAccessPanel } from "./model-access-panel";
+import FluidOrb from "@/components/ui/fluid-orb";
+import { QuantityCounter } from "@/components/meder/quantity-counter";
+import { ShieldCheck } from "lucide-react";
 
 type FixtureId = "repairable" | "budget_refusal" | "ambiguous" | "off_grid_min";
 type Planner = "deterministic" | "model";
@@ -35,25 +38,25 @@ const presets: Record<
   { label: string; quantity: string; cap: string; detail: string }
 > = {
   repairable: {
-    label: "01 · Quantity correction",
+    label: "Quantity correction",
     quantity: "0.00123",
     cap: "0.123",
     detail: "Step 0.001 · minimum quantity 0.001 · minimum notional 0.10",
   },
   budget_refusal: {
-    label: "02 · No correction within budget",
+    label: "No correction within budget",
     quantity: "0.100",
     cap: "9.99",
     detail: "Step 0.001 · minimum quantity 0.001 · minimum notional 10.00",
   },
   ambiguous: {
-    label: "03 · Unknown execution",
+    label: "Unknown execution",
     quantity: "0.100",
     cap: "10",
     detail: "Invented lost-response report. No account lookup or retry.",
   },
   off_grid_min: {
-    label: "04 · Zero-origin grid regression",
+    label: "Zero-origin grid regression",
     quantity: "0.0022",
     cap: "1",
     detail:
@@ -339,7 +342,7 @@ export default function Meder() {
         </div>
         <div className="topnote">A calmer way to understand an order.</div>
         <span className="badge">
-          <span className="dot" />
+          <ShieldCheck size={13} strokeWidth={2.2} aria-hidden="true" />
           READ-ONLY BY DESIGN
         </span>
       </header>
@@ -366,9 +369,7 @@ export default function Meder() {
         <div className="workspace">
           <section className="card" aria-labelledby="input-title">
             <div className="card-head">
-              <h2 id="input-title">
-                <span className="step">01</span>Your order
-              </h2>
+                <h2 id="input-title">Your order</h2>
               <span className="badge">SYNTHETIC DEMO</span>
             </div>
             <div className="card-body">
@@ -501,8 +502,7 @@ export default function Meder() {
                             required
                           />
                           <p className="help">
-                            Caps price × quantity. Not a balance or total-spend
-                            guarantee.
+                            Caps price × quantity. Not a balance guarantee.
                           </p>
                         </div>
                       )}
@@ -577,7 +577,7 @@ export default function Meder() {
                     </select>
                     <p className="help">
                       {planner === "deterministic"
-                        ? "No AI model is invoked in deterministic mode."
+                        ? "Deterministic mode only. No model is invoked."
                         : "The model selects read-only tools. The exact solver owns the verdict."}
                     </p>
                   </div>
@@ -600,15 +600,19 @@ export default function Meder() {
                   A proposal is not an order. Nothing is executed.
                 </p>
               </form>
-              <ModelAccessPanel access={modelAccess} diagnosing={busy} />
+              <details className="access" open>
+                <summary>
+                  Private model access
+                  <span className="muted"> — unlock is optional</span>
+                </summary>
+                <ModelAccessPanel access={modelAccess} diagnosing={busy} />
+              </details>
             </div>
           </section>
           <div className="right">
             <section className="card" aria-labelledby="diagnosis-title">
               <div className="card-head">
-                <h2 id="diagnosis-title">
-                  <span className="step">02</span>Diagnosis
-                </h2>
+                <h2 id="diagnosis-title">Diagnosis</h2>
                 {busy ? (
                   <span className="progress">
                     <span className="dot" />
@@ -749,9 +753,12 @@ export default function Meder() {
               ) : (
                 !error && (
                   <div className="idle">
-                    <span className="orb" aria-hidden="true">
-                      ⌁
-                    </span>
+                    <FluidOrb
+                      size={180}
+                      color="#256457"
+                      className="orb-shader"
+                      aria-hidden="true"
+                    />
                     <h3>Clarity starts with a check.</h3>
                     <p>
                       Choose an example or adjust the order. Meder checks the
@@ -785,9 +792,7 @@ export default function Meder() {
             </section>
             <section className="card" aria-labelledby="proposal-title">
               <div className="card-head">
-                <h2 id="proposal-title">
-                  <span className="step">03</span>Proposed correction
-                </h2>
+                <h2 id="proposal-title">Proposed correction</h2>
                 <span className="small muted">Review only</span>
               </div>
               <div className="card-body">
@@ -800,7 +805,11 @@ export default function Meder() {
                           className="quantity"
                           data-testid="original-quantity"
                         >
-                          {result?.originalOrder?.quantity}
+                          {result?.originalOrder?.quantity != null && (
+                            <QuantityCounter
+                              text={result.originalOrder.quantity}
+                            />
+                          )}
                         </div>
                       </div>
                       <div className="arrow" aria-hidden="true">
@@ -812,7 +821,7 @@ export default function Meder() {
                           className="quantity after"
                           data-testid="proposed-quantity"
                         >
-                          {proposal.quantity}
+                          <QuantityCounter text={proposal.quantity} />
                         </div>
                       </div>
                     </div>
