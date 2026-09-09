@@ -45,7 +45,7 @@ The implemented interface uses warm off-white backgrounds, deep slate text, rest
 - [Implementation specification](SPEC.md) is the current Meder build contract.
 - [TODO plan](TODO.md) defines ordered work and release gates.
 - [Machine-readable manifest](manifest.json) records implemented configuration and separately unverified release claims; it is not live runtime telemetry.
-- [Plan audit](PLAN-AUDIT.md) records the corrected architectural drift. The [runbook](RUNBOOK.md) documents operation; the [submission handoff](SUBMISSION.md) preserves external gates. The [UI refactor folder](ui-refactor/README.md) holds the UI/UX audit, design system, component map, landing spec, phased Bun-native plan and verification contract for the redesign (planning only; no UI code changed yet).
+- [Plan audit](PLAN-AUDIT.md) records the corrected architectural drift. The [runbook](RUNBOOK.md) documents operation; the [submission handoff](SUBMISSION.md) preserves external gates. The [UI refactor folder](ui-refactor/README.md) holds the UI/UX audit, design system, component map, landing spec, phased Bun-native plan and verification contract; the redesign (U06) is implemented in the app: Bun toolchain (P0), full-bleed shell and fluid type (P1), Rare UI components with copy cleanup — no AI kicker, no spend subtitle, no numerotation (P2), landing page at `/` with the tool at `/app` (P3), dark theme and mobile polish (P4).
 - [OrderMedic blueprint](../ordermedic-build-blueprint.md) remains the technical/evidence foundation. Meder adds delivery structure and branding; it does not expand financial permissions.
 - [Canonical Track A guide](../../track-a-agent-os-standalone.md) governs research interpretation. The `.old` guide is historical.
 

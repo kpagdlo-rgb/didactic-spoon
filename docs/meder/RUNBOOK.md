@@ -12,7 +12,7 @@ bun install --frozen-lockfile
 bun run dev -- --port 3000
 ```
 
-Open `http://localhost:3000` or `http://127.0.0.1:3000`. Both `/` and `/meder` open the same application. In Hoplite, use the managed Preview; the repository setup/run configuration and effective project overrides launch this app.
+Open `http://localhost:3000` or `http://127.0.0.1:3000`. `/` is the landing page; `/app` is the diagnostic tool; `/meder` redirects to `/app`. In Hoplite, use the managed Preview; the repository setup/run configuration and effective project overrides launch this app.
 
 **Development lifecycle:** fully restart the development process after changes to `src/server`, `src/domain`, or `fixtures`, or after changing server secrets. Client-only edits can use normal hot reload. Server hot reload can retain an old in-memory store alongside a newly evaluated metadata-validation identity, causing safe-but-failing diagnoses; it can also retain old access-gate callbacks. A fresh development process is required before integrated verification. Restart discards reports/grants and resets the process budget, so it is not a way to enforce a durable spending cap. Automatic coordinated server-state reload is not implemented.
 
