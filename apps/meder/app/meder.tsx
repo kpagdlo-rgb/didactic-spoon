@@ -350,9 +350,7 @@ export default function Meder() {
               Order diagnostics / Spot · LIMIT · GTC
             </div>
             <h1>
-              Order clarity.
-              <br />
-              <em>Without another trade.</em>
+              Order clarity. <em>Without another trade.</em>
             </h1>
             <p>
               Understand a rejected order. Explore a bounded quantity
