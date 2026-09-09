@@ -7,7 +7,38 @@ import { useModelAccess } from "../../src/client/use-model-access";
 import { ModelAccessPanel } from "./model-access-panel";
 import FluidOrb from "@/components/ui/fluid-orb";
 import { QuantityCounter } from "@/components/meder/quantity-counter";
-import { ShieldCheck } from "lucide-react";
+import { Moon, ShieldCheck, Sun } from "lucide-react";
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const saved = localStorage.getItem("meder-theme");
+    const wantsDark =
+      saved === "dark" ||
+      (!saved && matchMedia("(prefers-color-scheme: dark)").matches);
+    setDark(wantsDark);
+    document.documentElement.dataset.theme = wantsDark ? "dark" : "light";
+  }, []);
+  return (
+    <button
+      type="button"
+      className="theme-toggle"
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={() => {
+        const next = !dark;
+        setDark(next);
+        document.documentElement.dataset.theme = next ? "dark" : "light";
+        localStorage.setItem("meder-theme", next ? "dark" : "light");
+      }}
+    >
+      {dark ? (
+        <Sun size={16} strokeWidth={2} aria-hidden="true" />
+      ) : (
+        <Moon size={16} strokeWidth={2} aria-hidden="true" />
+      )}
+    </button>
+  );
+}
 
 type FixtureId = "repairable" | "budget_refusal" | "ambiguous" | "off_grid_min";
 type Planner = "deterministic" | "model";
@@ -106,6 +137,18 @@ export default function Meder() {
   const controller = useRef<AbortController | null>(null);
   const currentId = useRef<string | null>(null);
   const stopRequested = useRef(false);
+  const resultRef = useRef<HTMLElement | null>(null);
+
+  // Mobile: bring the verdict into view when a run settles.
+  useEffect(() => {
+    if (
+      run &&
+      run.status !== "running" &&
+      matchMedia("(max-width: 1023px)").matches
+    ) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [run]);
 
   useEffect(() => {
     return () => {
@@ -341,10 +384,13 @@ export default function Meder() {
           Meder
         </div>
         <div className="topnote">A calmer way to understand an order.</div>
-        <span className="badge">
-          <ShieldCheck size={13} strokeWidth={2.2} aria-hidden="true" />
-          READ-ONLY BY DESIGN
-        </span>
+        <div className="topbar-actions">
+          <span className="badge">
+            <ShieldCheck size={13} strokeWidth={2.2} aria-hidden="true" />
+            READ-ONLY BY DESIGN
+          </span>
+          <ThemeToggle />
+        </div>
       </header>
       <main>
         <section className="hero">
@@ -610,7 +656,11 @@ export default function Meder() {
             </div>
           </section>
           <div className="right">
-            <section className="card" aria-labelledby="diagnosis-title">
+            <section
+              className="card"
+              aria-labelledby="diagnosis-title"
+              ref={resultRef}
+            >
               <div className="card-head">
                 <h2 id="diagnosis-title">Diagnosis</h2>
                 {busy ? (

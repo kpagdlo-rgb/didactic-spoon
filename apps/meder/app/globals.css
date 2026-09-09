@@ -664,6 +664,18 @@ output {
   .topnote {
     display: none;
   }
+  .topbar {
+    gap: 10px;
+  }
+  .topbar .badge {
+    padding: 3px 8px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+    gap: 5px;
+  }
+  .topbar-actions {
+    gap: 6px;
+  }
   .hero {
     padding: 28px 0 23px;
   }
@@ -1139,4 +1151,67 @@ output {
 }
 @media (prefers-reduced-motion: reduce) {
   .lp-minicard { animation: none; }
+}
+
+/* P4 — theme toggle, topbar actions */
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2, var(--line));
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.theme-toggle:hover {
+  border-color: var(--green);
+  transform: translateY(-1px);
+}
+
+/* Dark-theme adaptation for legacy palette-driven rules */
+[data-theme="dark"] {
+  --paper: var(--color-bg);
+  --card: var(--color-surface);
+  --ink: var(--color-ink);
+  --muted: var(--color-ink-2);
+  --line: var(--color-line);
+  --green: var(--color-safe);
+  --pale: var(--color-safe-soft);
+  --amber: var(--color-caution);
+  --danger: var(--color-danger);
+}
+[data-theme="dark"] .lp-glow-a {
+  background: radial-gradient(circle, rgb(111 198 173 / 0.35) 0%, transparent 65%);
+}
+[data-theme="dark"] .lp-glow-b {
+  background: radial-gradient(circle, rgb(224 169 90 / 0.25) 0%, transparent 65%);
+}
+[data-theme="dark"] .lp-minicard,
+[data-theme="dark"] .lp-promise {
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.6);
+}
+[data-theme="dark"] .skip {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* Fieldset defaults to min-width: min-content, which breaks narrow viewports */
+fieldset {
+  min-width: 0;
+}
+
+/* Keep form controls within narrow viewports (selects size to longest option) */
+.field, .two > * {
+  min-width: 0;
+}
+select, input, textarea {
+  max-width: 100%;
 }
