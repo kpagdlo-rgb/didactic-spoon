@@ -49,6 +49,7 @@ node scripts/verify-a11y.mjs         # axe-core WCAG 2 A/AA on both routes, both
 node scripts/verify-motion-csp.mjs   # reduced-motion behaviour + CSP header/violation check
 node scripts/probe-width.mjs         # horizontal-overflow probe at 390 px
 node scripts/probe-copy.mjs          # rendered-DOM sweep: no AI claims, no spend phrasing, no numerotation
+node scripts/probe-prod-api.mjs      # live diagnosis POST against a running server (PROBE_BASE, default :3100)
 ```
 
 Current gate counts: 87 Node tests, 21 browser tests (20 contract + 1 landing smoke).

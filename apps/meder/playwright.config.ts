@@ -9,9 +9,14 @@ export default defineConfig({
   use: { baseURL: process.env.MEDER_TEST_URL ?? "http://127.0.0.1:3000", trace: "retain-on-failure" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: process.env.CI ? {
-    command: "bun run dev -- --port 3000",
+    // CI builds first, so test the production server: no cold-compile
+    // races and the artifact under test is the one that ships.
+    // The production origin gate denies loopback without a configured
+    // origin, so the CI server authorizes exactly its own base URL.
+    command: "bun run start -- --port 3000",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: false,
     timeout: 60_000,
+    env: { MEDER_ALLOWED_ORIGIN: "http://127.0.0.1:3000" },
   } : undefined,
 });

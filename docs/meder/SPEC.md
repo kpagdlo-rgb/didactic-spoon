@@ -4,7 +4,7 @@
 
 ## 1. Architecture and delivery boundary
 
-`apps/meder` is an independent Next.js/TypeScript application; the Python documentation reader remains separate on port 3001. Next.js 16.3.4, React 19.2.8, and TypeScript 5.9.3 are pinned with an npm lockfile and verified on Node 24. The implementation deliberately uses closed structural hand validators rather than Zod, BigInt/rational arithmetic in `src/domain/exact.ts` and `solver.ts`, Node's `node:test` via `tsx` rather than Vitest, and Playwright for browser tests. The optional OpenAI Responses adapter uses server-side `fetch`; no model SDK is required. These are implementation choices, not relaxation of schema, arithmetic, or verification requirements. No embedded Python or browser solver is authoritative.
+`apps/meder` is an independent Next.js/TypeScript application; the Python documentation reader remains separate on port 3001. Next.js 16.3.4, React 19.2.8, and TypeScript 5.9.3 are pinned with a Bun-managed lockfile (`bun.lock`) and verified on Node 24 (Bun is the package manager and script runner; Next runs under Node). The implementation deliberately uses closed structural hand validators rather than Zod, BigInt/rational arithmetic in `src/domain/exact.ts` and `solver.ts`, Node's `node:test` via `tsx` rather than Vitest, and Playwright for browser tests. The optional OpenAI Responses adapter uses server-side `fetch`; no model SDK is required. These are implementation choices, not relaxation of schema, arithmetic, or verification requirements. No embedded Python or browser solver is authoritative.
 
 ```text
 Browser → byte/schema gate → normalized immutable run record

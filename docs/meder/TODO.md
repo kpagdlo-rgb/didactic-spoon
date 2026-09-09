@@ -21,7 +21,7 @@
 | G01 | [ ] Open | User-provided form text describes Track A agent **or workflow**, theme choices, public video platform/post URL, replication, KYC/jurisdiction restrictions and creativity criteria. These fields are no longer wholly unknown, but authenticated confirmation, personal eligibility and read-only/fixture acceptance remain unverified. Do not retain private account data. See [submission history](SUBMISSION.md). |
 | G02 | [ ] Partial | OpenAI Responses provider and server-only credential path implemented in `apps/meder/src/server/planner.ts`; currently unconfigured. One genuine permitted tool invocation has not been observed. |
 | G03 | [x] | Synthetic mode is explicit. `src/server/http.ts` rejects live mode locally with 451 and makes no Binance request; no silent fallback or host workaround. |
-| G04 | [x] | `apps/meder/package.json` and `package-lock.json`: Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3; npm clean install/build verified on Node 24. |
+| G04 | [x] | `apps/meder/package.json`: Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3; npm clean install/build verified on Node 24 (historical record — superseded by the Bun migration, UI-refactor P0, which added `bun.lock` and replaced `package-lock.json`). |
 | G05 | [x] | Delivery class is **tested synthetic diagnostic application**, with an optional unverified model adapter. Submission is USER-REPORTED, not independently verified; no verified agent or live integration claim. |
 
 Paths below are relative to `apps/meder` unless otherwise stated. Missing access is not solved by scripted model claims or proxy switching.
@@ -30,7 +30,7 @@ Paths below are relative to `apps/meder` unless otherwise stated. Missing access
 
 | ID | Status | Implemented files / acceptance evidence |
 | --- | --- | --- |
-| B01 | [x] | `app/`, `package.json`, `package-lock.json`, `tsconfig.json`, `.env.example`; independent app and reader preserved. |
+| B01 | [x] | `app/`, `package.json`, `tsconfig.json`, `.env.example` (plus historical `package-lock.json`, replaced by `bun.lock` in the Bun migration); independent app and reader preserved. |
 | B02 | [x] | `src/domain/types.ts`, `schema.ts`, `json.ts`: closed discriminated inputs, unknown/duplicate keys, byte/digit limits, and BUY/SELL intent checks. |
 | B03 | [x] | `src/domain/exact.ts`: BigInt/rational parsing, comparisons, floor/ceil and repeating-division boundary tests. |
 | B04 | [x] | `src/domain/metadata.ts`, `solver.ts`: zero-origin grids, notional intersections, protected fields, unsupported evidence, and explicit unchecked constraints. |
