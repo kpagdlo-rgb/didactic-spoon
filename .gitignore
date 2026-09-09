@@ -1,12 +1,50 @@
-.venv/
-__pycache__/
+# --- Hoplite workspace state (local proof artifacts, uploads, rebases) ---
 .hoplite/artifacts/
 .hoplite/attachments/
-.firecrawl/
+.hoplite/archive/
+.hoplite/rebases/
+
+# --- Python (document reader) ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node / Next.js (apps/meder) ---
 node_modules/
 .next/
+out/
+dist/
+build/
 *.tsbuildinfo
-playwright-report/
+.vercel/
+
+# --- Playwright ---
 test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# --- Environment / secrets ---
 .env*
 !.env.example
+
+# --- Logs and crash dumps ---
+*.log
+npm-debug.log*
+bun-debug.log*
+
+# --- Editors / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# --- Local backups and throwaway copies ---
+*.old
+*.bak
+*.orig

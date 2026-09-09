@@ -54,7 +54,11 @@ blockquote{border-left:3px solid #97b8e3;margin-left:0;padding-left:20px;color:v
 
 
 def read_doc(key):
-    return (ROOT / DOCS[key][1]).read_text()
+    path = ROOT / DOCS[key][1]
+    if not path.is_file():
+        return (f"*`{DOCS[key][1]}` is not present in this checkout. "
+                "It is a local-only historical artifact and is excluded from Git.*")
+    return path.read_text()
 
 
 def article(key):
