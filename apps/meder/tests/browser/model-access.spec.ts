@@ -83,7 +83,7 @@ test("unlock clears the key before the response, enables model mode, and never s
   }
   await expect(panel(page).locator(".badge")).toHaveText("UNLOCKED");
   await expect(modelOption(page)).toBeEnabled();
-  await expect(panel(page).getByRole("status")).toContainText("No model has been called.");
+  await expect(panel(page).getByRole("status")).toHaveText("Access key accepted. Unlocking does not call a model.");
   await expect(runtime(page)).toHaveValue("deterministic");
   await runtime(page).selectOption("model");
   await expect(diagnose(page)).toBeEnabled();
@@ -171,6 +171,54 @@ test("window focus refresh observes an expired grant and relocks the selected mo
   await expect(modelOption(page)).toBeDisabled();
   await expect(runtime(page)).toHaveValue("model");
   await expect(diagnose(page)).toBeDisabled();
+  expect(diagnoses).toEqual([]);
+});
+
+test("a successful focus refresh clears a previous capabilities failure warning", async ({ page }) => {
+  const diagnoses = await blockDiagnoses(page);
+  let recovered = false;
+  await page.route("**/api/capabilities", (route) => route.fulfill(recovered
+    ? { json: capabilities({ authorized: true }) }
+    : { status: 500, json: { error: { code: "INTERNAL", message: "Unavailable" } } }));
+  const failed = page.waitForResponse("**/api/capabilities");
+  await page.goto("/");
+  expect((await failed).status()).toBe(500);
+  await expect(panel(page).getByRole("alert")).toHaveText("Model access could not be checked. Deterministic diagnostics remain available.");
+  await expect(modelOption(page)).toBeDisabled();
+  await expect(runtime(page)).toHaveValue("deterministic");
+  await expect(diagnose(page)).toBeEnabled();
+  recovered = true;
+  const refreshed = page.waitForResponse("**/api/capabilities");
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  expect((await refreshed).status()).toBe(200);
+  await expect(panel(page).locator(".badge")).toHaveText("UNLOCKED");
+  await expect(modelOption(page)).toBeEnabled();
+  await expect(panel(page).getByRole("alert")).toHaveCount(0);
+  expect(diagnoses).toEqual([]);
+});
+
+test("a malformed successful login response cannot claim that access was accepted", async ({ page }) => {
+  const diagnoses = await blockDiagnoses(page);
+  await page.route("**/api/capabilities", (route) => route.fulfill({ json: capabilities() }));
+  let attempts = 0;
+  await page.route("**/api/model-access", async (route) => {
+    attempts++;
+    expect(route.request().postDataJSON()).toEqual({ accessKey: demoKey });
+    await route.fulfill({ status: 200, json: {} });
+  });
+  await openApp(page);
+  const input = page.getByLabel("Private demo access key");
+  await expect(input).toBeVisible();
+  await input.fill(demoKey);
+  await page.getByRole("button", { name: "Unlock model access", exact: true }).click();
+  await expect(panel(page).getByRole("alert")).toHaveText("The access change could not be confirmed. No request was retried.");
+  await expect(panel(page).getByRole("status")).toBeEmpty();
+  await expect(input).toHaveValue("");
+  await expect(input).toBeEnabled();
+  await expect(panel(page).locator(".badge")).toHaveText("LOCKED");
+  await expect(modelOption(page)).toBeDisabled();
+  await expectNoStoredKey(page, demoKey);
+  expect(attempts).toBe(1);
   expect(diagnoses).toEqual([]);
 });
 
