@@ -1,5 +1,19 @@
 # 03 — Component / Shader / Icon map
 
+> **Implementation status (head `516f3d2`):** this is the *plan* document; the
+> shipped tree differs where the frozen Playwright contract forced changes.
+> Adopted as planned: `MeshGradient` (landing hero), `FluidOrb` (landing +
+> app idle), `StepPlayer` (landing how-it-works), `CodeBlock` (proposal
+> export), `ScrollProgress` (landing pill; mounted in the interface-audit
+> pass), `Sheet` (About-safety), `Tooltip` (`FieldHelp`). Deviations:
+> `AnimatedCounter` was installed then **removed** — the frozen
+> `toHaveText("0.001")` contract cannot match its odometer, so
+> `components/meder/quantity-counter.tsx` is the exact-string fork used in
+> the app and landing payoff. `components/ui/button.tsx` was installed then
+> **removed** as unused; the app keeps its own `.primary`/`.btn` classes.
+> `badge.tsx` was never built; the `.badge` class is used directly. Do not
+> re-add these components without re-checking the browser contract.
+
 Every line: **what to add → from where → install command → where it goes → paste-ready snippet → what to change → how to confirm.** Prerequisite: P0 in [05-REFACTOR-PLAN.md](05-REFACTOR-PLAN.md) has installed Tailwind v4, the `@/` alias, `cn()`, `motion`, and `components.json`.
 
 All installs use Bun: `bunx --bun shadcn@latest add <ref>`. Run from `apps/meder`. The CLI writes into `components/ui/` (Rare UI) and respects `components.json`. Commit the generated files — they are yours to edit.
