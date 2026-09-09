@@ -1,117 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { DiagnosisResult } from "../../src/domain/types";
 import { parseClosedJson } from "../../src/domain/json";
 import { useModelAccess } from "../../src/client/use-model-access";
-import { ModelAccessPanel } from "./model-access-panel";
-import FluidOrb from "@/components/ui/fluid-orb";
-import { QuantityCounter } from "@/components/meder/quantity-counter";
-import { Moon, ShieldCheck, Sun } from "lucide-react";
-
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const saved = localStorage.getItem("meder-theme");
-    const wantsDark =
-      saved === "dark" ||
-      (!saved && matchMedia("(prefers-color-scheme: dark)").matches);
-    setDark(wantsDark);
-    document.documentElement.dataset.theme = wantsDark ? "dark" : "light";
-  }, []);
-  return (
-    <button
-      type="button"
-      className="theme-toggle"
-      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
-      onClick={() => {
-        const next = !dark;
-        setDark(next);
-        document.documentElement.dataset.theme = next ? "dark" : "light";
-        localStorage.setItem("meder-theme", next ? "dark" : "light");
-      }}
-    >
-      {dark ? (
-        <Sun size={16} strokeWidth={2} aria-hidden="true" />
-      ) : (
-        <Moon size={16} strokeWidth={2} aria-hidden="true" />
-      )}
-    </button>
-  );
-}
-
-type FixtureId = "repairable" | "budget_refusal" | "ambiguous" | "off_grid_min";
-type Planner = "deterministic" | "model";
-type TraceEntry = {
-  tool?: string;
-  name?: string;
-  summary?: string;
-  code?: string;
-};
-type Run = {
-  id: string;
-  status: "running" | "completed" | "canceled" | "error";
-  observedSource?: "synthetic_fixture" | "redacted_import";
-  result?: DiagnosisResult | null;
-  trace?: TraceEntry[];
-  evidence?: {
-    mode?: string;
-    receivedAt?: string;
-    fixtureVersion?: string;
-    ageMs?: number;
-  }[];
-  error?: { code: string; message: string } | null;
-  export?: unknown;
-};
-
-const presets: Record<
-  FixtureId,
-  { label: string; quantity: string; cap: string; detail: string }
-> = {
-  repairable: {
-    label: "Quantity correction",
-    quantity: "0.00123",
-    cap: "0.123",
-    detail: "Step 0.001 · minimum quantity 0.001 · minimum notional 0.10",
-  },
-  budget_refusal: {
-    label: "No correction within budget",
-    quantity: "0.100",
-    cap: "9.99",
-    detail: "Step 0.001 · minimum quantity 0.001 · minimum notional 10.00",
-  },
-  ambiguous: {
-    label: "Unknown execution",
-    quantity: "0.100",
-    cap: "10",
-    detail: "Invented lost-response report. No account lookup or retry.",
-  },
-  off_grid_min: {
-    label: "Zero-origin grid regression",
-    quantity: "0.0022",
-    cap: "1",
-    detail:
-      "Step 0.001 · minimum quantity 0.0015 · grid is not offset from minimum",
-  },
-};
-const titles: Record<string, string> = {
-  REPAIR_PROPOSED: "A smaller quantity fits your limits.",
-  REFUSED: "No correction fits your limits.",
-  REFUSED_EXACT_TOLERANCE: "Your exact quantity stays protected.",
-  ALREADY_VALID: "Your order meets the checked rules.",
-  INCOMPLETE: "There isn’t enough evidence to decide.",
-  UNRESOLVED: "The execution outcome is unknown.",
-};
-const ruleLabels: Record<string, string> = {
-  LOT_SIZE:
-    "Quantity is outside the allowed lot bounds or does not match the zero-origin step.",
-  PRICE_FILTER:
-    "Price is outside its allowed bounds or tick grid. Your price will not be changed.",
-  MIN_NOTIONAL: "Price × quantity is below the required minimum notional.",
-  NOTIONAL: "Price × quantity is outside the permitted notional interval.",
-  QUOTE_NOTIONAL_CAP:
-    "Price × quantity exceeds your quote-notional cap, excluding fees.",
-};
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { TopBar } from "@/components/meder/top-bar";
+import { OrderForm } from "@/components/meder/order-form";
+import { ResultPanel } from "@/components/meder/result-panel";
+import { ProposalPanel } from "@/components/meder/proposal-panel";
+import { SafetyStrip } from "@/components/meder/safety-strip";
+import {
+  presets,
+  type FixtureId,
+  type Planner,
+  type Run,
+} from "@/components/meder/meder-types";
 
 export default function Meder() {
   const [fixture, setFixture] = useState<FixtureId>("repairable");
@@ -174,11 +77,11 @@ export default function Meder() {
     setRaw("");
     setUseRaw(false);
   }
-  function input() {
+  function input(): Record<string, unknown> {
     if (useRaw) {
       if (new TextEncoder().encode(raw).byteLength > 16384)
         throw new Error("Oversized input");
-      return parseClosedJson(raw);
+      return parseClosedJson(raw) as Record<string, unknown>;
     }
     if (fixture === "ambiguous")
       return {
@@ -214,26 +117,20 @@ export default function Meder() {
     };
   }
   async function cancelOnServer(id: string) {
-    const response = await fetch(
-      `/api/diagnoses/${encodeURIComponent(id)}/cancel`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-        signal: AbortSignal.timeout(3000),
-      },
-    );
+    const response = await fetch(`/api/diagnoses/${encodeURIComponent(id)}/cancel`, {
+      method: "POST",
+    });
     if (!response.ok)
-      throw new Error(
-        "Could not confirm cancellation. This app has no financial actions.",
-      );
+      throw new Error("Cancellation could not be confirmed.");
     return response.json() as Promise<Run>;
   }
   async function diagnose(event: FormEvent) {
     event.preventDefault();
     if (busy || modelAccess.pending) return;
     if (planner === "model" && !modelAvailable) {
-      setError("Model access is unavailable. Unlock access or explicitly choose deterministic mode.");
+      setError(
+        "Model access is unavailable. Unlock access or explicitly choose deterministic mode.",
+      );
       return;
     }
     invalidate();
@@ -358,12 +255,6 @@ export default function Meder() {
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  const result = run?.result;
-  const proposal = result?.proposedOrder;
-  const caution =
-    result &&
-    result.result !== "REPAIR_PROPOSED" &&
-    result.result !== "ALREADY_VALID";
   const edit =
     (setter: (value: string) => void) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -372,572 +263,78 @@ export default function Meder() {
     };
 
   return (
-    <div className="shell">
-      <a href="#order-input" className="skip">
-        Skip to order input
-      </a>
-      <header className="topbar">
-        <div className="wordmark">
-          <span className="mark" aria-hidden="true">
-            m
-          </span>
-          Meder
-        </div>
-        <div className="topnote">A calmer way to understand an order.</div>
-        <div className="topbar-actions">
-          <span className="badge">
-            <ShieldCheck size={13} strokeWidth={2.2} aria-hidden="true" />
-            READ-ONLY BY DESIGN
-          </span>
-          <ThemeToggle />
-        </div>
-      </header>
-      <main>
-        <section className="hero">
-          <div>
-            <div className="eyebrow">
-              Order diagnostics / Spot · LIMIT · GTC
-            </div>
-            <h1>
-              Order clarity. <em>Without another trade.</em>
-            </h1>
-            <p>
-              Understand a rejected order. Explore a bounded quantity
-              correction.
-              <br />
-              Or know when to stop — without submitting anything.
-            </p>
-          </div>
-          <div className="safety-pill">
-            No account connection. No financial writes.
-          </div>
-        </section>
-        <div className="workspace">
-          <section className="card" aria-labelledby="input-title">
-            <div className="card-head">
-                <h2 id="input-title">Your order</h2>
-              <span className="badge">SYNTHETIC DEMO</span>
-            </div>
-            <div className="card-body">
-              <form onSubmit={diagnose} id="order-input">
-                <fieldset
-                  aria-disabled={busy}
-                  onChangeCapture={(event) => {
-                    if (busy) {
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }
-                  }}
-                  onKeyDownCapture={(event) => {
-                    if (busy && event.key !== "Tab") event.preventDefault();
-                  }}
-                  style={{
-                    border: 0,
-                    padding: 0,
-                    margin: 0,
-                    minWidth: 0,
-                    pointerEvents: busy ? "none" : undefined,
-                  }}
-                >
-                  <legend className="sr-only">Diagnostic inputs</legend>
-                  <div className="field">
-                    <label htmlFor="source-mode">Data source</label>
-                    <select
-                      id="source-mode"
-                      value="synthetic"
-                      onChange={() => {}}
-                    >
-                      <option value="synthetic">
-                        Synthetic demo · invented data
-                      </option>
-                      <option disabled>Live Binance data · unavailable</option>
-                    </select>
-                  </div>
-                  <div className="mode-copy">
-                    <strong>Demo data, not exchange evidence.</strong>
-                    <br />
-                    Live reads are disabled after a regional access restriction.
-                    No Binance request is made.
-                  </div>
-                  <div className="field">
-                    <label htmlFor="fixture">Example scenario</label>
-                    <select
-                      id="fixture"
-                      value={fixture}
-                      onChange={(e) =>
-                        chooseFixture(e.target.value as FixtureId)
-                      }
-                    >
-                      {Object.entries(presets).map(([id, value]) => (
-                        <option key={id} value={id}>
-                          {value.label}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="help">{presets[fixture].detail}</p>
-                  </div>
-                  {fixture !== "ambiguous" && !useRaw && (
-                    <>
-                      <div className="divider" />
-                      <div className="two">
-                        <div className="field">
-                          <label htmlFor="symbol">Symbol</label>
-                          <input id="symbol" value="ABCUSDT" readOnly />
-                        </div>
-                        <div className="field">
-                          <label htmlFor="side">Side</label>
-                          <select
-                            id="side"
-                            value={side}
-                            onChange={edit(setSide)}
-                          >
-                            <option>BUY</option>
-                            <option>SELL</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="two">
-                        <div className="field">
-                          <label htmlFor="price">Limit price</label>
-                          <input
-                            id="price"
-                            inputMode="decimal"
-                            value={price}
-                            onChange={edit(setPrice)}
-                            required
-                          />
-                        </div>
-                        <div className="field">
-                          <label htmlFor="quantity">Quantity</label>
-                          <input
-                            id="quantity"
-                            inputMode="decimal"
-                            value={quantity}
-                            onChange={edit(setQuantity)}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="field">
-                        <label htmlFor="tolerance">Quantity permission</label>
-                        <select
-                          id="tolerance"
-                          value={side === "SELL" ? "exact" : tolerance}
-                          onChange={edit(setTolerance)}
-                          disabled={side === "SELL"}
-                        >
-                          <option value="allow_all_downward">
-                            Allow any downward correction
-                          </option>
-                          <option value="exact">Keep my exact quantity</option>
-                        </select>
-                        <p className="help">
-                          Price is always protected. Quantity never increases.
-                        </p>
-                      </div>
-                      {side === "BUY" && (
-                        <div className="field">
-                          <label htmlFor="cap">
-                            Quote-notional cap · fees excluded
-                          </label>
-                          <input
-                            id="cap"
-                            inputMode="decimal"
-                            value={cap}
-                            onChange={edit(setCap)}
-                            required
-                          />
-                          <p className="help">
-                            Caps price × quantity. Not a balance guarantee.
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {fixture === "ambiguous" && !useRaw && (
-                    <div className="notice">
-                      A synthetic response was lost. An imported status cannot
-                      confirm what happened. This example never retries or
-                      checks an account.
-                    </div>
-                  )}
-                  <details className="advanced">
-                    <summary>Advanced: redacted JSON input</summary>
-                    <label className="help">
-                      <input
-                        type="checkbox"
-                        checked={useRaw}
-                        onChange={(e) => {
-                          invalidate();
-                          if (e.target.checked && !raw)
-                            setRaw(JSON.stringify(input(), null, 2));
-                          setUseRaw(e.target.checked);
-                        }}
-                      />{" "}
-                      Use JSON instead of the form
-                    </label>
-                    {useRaw && (
-                      <div className="field">
-                        <label htmlFor="raw-input">
-                          Request input · maximum 16 KiB
-                        </label>
-                        <textarea
-                          id="raw-input"
-                          value={raw}
-                          onChange={(e) => {
-                            invalidate();
-                            setRaw(e.target.value);
-                          }}
-                        />
-                        <p className="help">
-                          Do not paste keys, signatures, private account data,
-                          or real identifiers. Free text and identifiers are
-                          excluded from reports and model prompts.
-                        </p>
-                      </div>
-                    )}
-                  </details>
-                  <div className="field">
-                    <label htmlFor="planner">Diagnostic runtime</label>
-                    <select
-                      id="planner"
-                      value={planner}
-                      onChange={(e) => {
-                        invalidate();
-                        setPlanner(e.target.value as Planner);
-                      }}
-                    >
-                      <option value="deterministic">
-                        Deterministic · exact local rules
-                      </option>
-                      <option value="model" disabled={!modelAvailable}>
-                        Model-guided ·{" "}
-                        {!modelAccess.checked ? "access unverified"
-                          : !modelAccess.state.providerConfigured ? "provider not configured"
-                          : !modelAccess.state.modelAccess.configured ? "access key not configured"
-                          : !modelAccess.state.modelAccess.authorized ? "locked · unlock below"
-                          : modelAccess.state.modelBudget?.remaining === 0 ? "run budget exhausted"
-                          : (modelAccess.state.modelBudget?.active ?? 0) > 0 ? "another run is active"
-                          : "unlocked private session"}
-                      </option>
-                    </select>
-                    <p className="help">
-                      {planner === "deterministic"
-                        ? "Deterministic mode only. No model is invoked."
-                        : "The model selects read-only tools. The exact solver owns the verdict."}
-                    </p>
-                  </div>
-                </fieldset>
-                <button className="primary full" type="submit" disabled={busy || modelAccess.pending || (planner === "model" && !modelAvailable)}>
-                  {busy ? "Diagnosing…" : "Diagnose order"}
-                </button>
-                {planner === "model" && !modelAvailable && !busy && <p className="help">Model mode is unavailable. Unlock access below or explicitly select deterministic mode. No automatic fallback occurs.</p>}
-                {busy && (
-                  <button
-                    className="full"
-                    type="button"
-                    onClick={stop}
-                    style={{ marginTop: 8 }}
-                  >
-                    Stop diagnosis
-                  </button>
-                )}
-                <p className="form-footer">
-                  A proposal is not an order. Nothing is executed.
-                </p>
-              </form>
-              <details className="access" open>
-                <summary>
-                  Private model access
-                  <span className="muted"> — unlock is optional</span>
-                </summary>
-                <ModelAccessPanel access={modelAccess} diagnosing={busy} />
-              </details>
+    <TooltipProvider>
+      <div className="shell">
+        <a href="#order-input" className="skip">
+          Skip to order input
+        </a>
+        <TopBar />
+        <main>
+          <section className="hero">
+            <div>
+              <div className="eyebrow">Order diagnostics / Spot · LIMIT · GTC</div>
+              <h1>
+                Order clarity. <em>Without another trade.</em>
+              </h1>
+              <p>
+                Understand a rejected order. Explore a bounded quantity
+                correction.
+                <br />
+                Or know when to stop — without submitting anything.
+              </p>
             </div>
           </section>
-          <div className="right">
-            <section
-              className="card"
-              aria-labelledby="diagnosis-title"
-              ref={resultRef}
-            >
-              <div className="card-head">
-                <h2 id="diagnosis-title">Diagnosis</h2>
-                {busy ? (
-                  <span className="progress">
-                    <span className="dot" />
-                    Checking local evidence
-                  </span>
-                ) : (
-                  <span className="small muted">
-                    {run ? "Report available" : "Ready when you are"}
-                  </span>
-                )}
-              </div>
-              <div role="status" aria-live="polite" className="sr-only">
-                {busy
-                  ? "Diagnosis in progress"
-                  : error ||
-                    (run?.status === "canceled"
-                      ? "Diagnosis canceled"
-                      : result
-                        ? `${result.result}. ${titles[result.result] ?? "Diagnosis complete"}`
-                        : "Ready for diagnosis")}
-              </div>
-              {error && (
-                <div className="card-body">
-                  <div className="error-box" role="alert">
-                    {error}
-                  </div>
-                </div>
-              )}
-              {run?.status === "canceled" ? (
-                <div className="card-body">
-                  <span className="state caution">CANCELED</span>
-                  <h3 className="verdict-title">
-                    Stopped. Nothing was submitted.
-                  </h3>
-                  <p className="small muted">
-                    This run cannot publish a late proposal. Start a new
-                    diagnosis when you are ready.
-                  </p>
-                </div>
-              ) : run?.status === "error" ? (
-                <div className="card-body">
-                  <span className="state error">RUN ERROR</span>
-                  <h3 className="verdict-title">
-                    The diagnostic did not complete.
-                  </h3>
-                  <p className="small muted">
-                    {run.error?.message ||
-                      "Required evidence or model output was unavailable. No verdict has been invented."}
-                  </p>
-                </div>
-              ) : result ? (
-                <div className="card-body" data-testid="diagnosis-result">
-                  <span className={`state${caution ? " caution" : ""}`}>
-                    {result.result}
-                  </span>
-                  <h3 className="verdict-title">
-                    {titles[result.result] ?? "Local diagnosis complete."}
-                  </h3>
-                  {result.result === "UNRESOLVED" && (
-                    <p className="small">
-                      We cannot confirm whether this order executed. Do not
-                      resubmit based on this report.
-                    </p>
-                  )}
-                  <p className="small muted">{result.explanation}</p>
-                  {run.observedSource === "redacted_import" && (
-                    <p className="notice">
-                      User-reported import — not an independently verified
-                      exchange response. Metadata below is still synthetic.
-                    </p>
-                  )}
-                  {result.validation.failed.length > 0 && (
-                    <p className="mini-label">Original order · failed checks</p>
-                  )}
-                  <ul className="constraints">
-                    {result.validation.failed.map((reason, index) => (
-                      <li key={index}>
-                        {ruleLabels[reason] ?? reason.replaceAll("_", " ")}
-                      </li>
-                    ))}
-                  </ul>
-                  {result.bounds && (
-                    <p className="small">
-                      Feasible grid bounds:{" "}
-                      <strong>{result.bounds.lowerQuantity}</strong> minimum /{" "}
-                      <strong>{result.bounds.upperQuantity}</strong> maximum.
-                    </p>
-                  )}
-                  {result.result !== "UNRESOLVED" && (
-                    <div className="notice">
-                      <strong>
-                        Partial validation — exchange acceptance unknown.
-                      </strong>
-                      These are current synthetic checks, not proof of an
-                      exchange rejection or acceptance.
-                    </div>
-                  )}
-                  <p className="unchecked">
-                    Unchecked:{" "}
-                    {result.validation.unchecked
-                      .map((value) => value.replaceAll("_", " "))
-                      .join(", ") ||
-                      "balances, fees, account permissions, dynamic price bounds"}
-                    .
-                  </p>
-                  <div className="divider" />
-                  <div className="evidence">
-                    <span>
-                      Source <b>Synthetic fixture</b>
-                    </span>
-                    <span>
-                      Runtime{" "}
-                      <b>
-                        {submittedPlanner === "model"
-                          ? "Model-guided"
-                          : "Deterministic · no model"}
-                      </b>
-                    </span>
-                    <span>
-                      Scenario <b>{presets[submittedFixture].label.slice(5)}</b>
-                    </span>
-                    {run.evidence?.[0]?.receivedAt && (
-                      <span>
-                        Received <b>{run.evidence[0].receivedAt}</b>
-                      </span>
-                    )}
-                    {result.evidenceAgeMs !== undefined && (
-                      <span>
-                        Age when checked{" "}
-                        <b>
-                          {(result.evidenceAgeMs / 1000).toFixed(3)}s ·
-                          synthetic, not live
-                        </b>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                !error && (
-                  <div className="idle">
-                    <FluidOrb
-                      size={180}
-                      color="#256457"
-                      className="orb-shader"
-                      aria-hidden="true"
-                    />
-                    <h3>Clarity starts with a check.</h3>
-                    <p>
-                      Choose an example or adjust the order. Meder checks the
-                      local rules and keeps your intent intact.
-                    </p>
-                  </div>
-                )
-              )}
-              {run && (
-                <details className="trace">
-                  <summary>
-                    Sanitized tool trace{" "}
-                    <span className="muted">
-                      {run.trace?.length ?? 0} entries
-                    </span>
-                  </summary>
-                  <p className="help">
-                    Tool summaries only. No private reasoning, pasted errors, or
-                    account data.
-                  </p>
-                  <ol>
-                    {run.trace?.map((entry, i) => (
-                      <li key={i}>
-                        <code>{entry.tool ?? entry.name}</code>
-                        {` — ${entry.summary ?? entry.code ?? "completed"}`}
-                      </li>
-                    ))}
-                  </ol>
-                </details>
-              )}
-            </section>
-            <section className="card" aria-labelledby="proposal-title">
-              <div className="card-head">
-                <h2 id="proposal-title">Proposed correction</h2>
-                <span className="small muted">Review only</span>
-              </div>
-              <div className="card-body">
-                {proposal ? (
-                  <>
-                    <div className="proposal-grid">
-                      <div>
-                        <div className="mini-label">Original quantity</div>
-                        <div
-                          className="quantity"
-                          data-testid="original-quantity"
-                        >
-                          {result?.originalOrder?.quantity != null && (
-                            <QuantityCounter
-                              text={result.originalOrder.quantity}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <div className="arrow" aria-hidden="true">
-                        →
-                      </div>
-                      <div className="comparison">
-                        <div className="mini-label">Proposed quantity</div>
-                        <div
-                          className="quantity after"
-                          data-testid="proposed-quantity"
-                        >
-                          <QuantityCounter text={proposal.quantity} />
-                        </div>
-                      </div>
-                    </div>
-                    <p className="protected">
-                      Unchanged: {proposal.symbol} · {proposal.side} ·{" "}
-                      {proposal.type} / {proposal.timeInForce} · price{" "}
-                      {proposal.price}
-                    </p>
-                    <p className="small">
-                      Proposed notional:{" "}
-                      <strong>
-                        {result?.proposedNotional ?? "See report"}
-                      </strong>{" "}
-                      <span className="muted">· fees excluded</span>
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h3>
-                      {result
-                        ? "No actionable quantity patch."
-                        : "A proposal, only when the rules allow it."}
-                    </h3>
-                    <p className="small muted">
-                      {result
-                        ? "Refused, incomplete, ambiguous, and already-valid results do not produce a replacement order."
-                        : "Meder may reduce a BUY quantity within your cap. It will never change your price, increase quantity, or retry an uncertain order."}
-                    </p>
-                  </>
-                )}
-                <div className="actions">
-                  <button onClick={copyProposal} disabled={!proposal || busy}>
-                    Copy proposed JSON
-                  </button>
-                  <button
-                    onClick={exportReport}
-                    disabled={!run?.export || busy}
-                  >
-                    Export report
-                  </button>
-                  <output aria-live="polite">{copyMessage}</output>
-                </div>
-                {proposal && (
-                  <details className="advanced">
-                    <summary>Inspect proposed JSON</summary>
-                    <pre data-testid="proposal-json">
-                      {JSON.stringify(proposal, null, 2)}
-                    </pre>
-                  </details>
-                )}
-                <p className="help">
-                  Exports omit identifiers, pasted error text, and
-                  session/evidence tokens.
-                </p>
-              </div>
-            </section>
+          <div className="workspace">
+            <OrderForm
+              busy={busy}
+              pending={modelAccess.pending}
+              fixture={fixture}
+              side={side}
+              price={price}
+              quantity={quantity}
+              cap={cap}
+              tolerance={tolerance}
+              planner={planner}
+              modelAvailable={modelAvailable}
+              raw={raw}
+              useRaw={useRaw}
+              modelAccess={modelAccess}
+              input={input}
+              invalidate={invalidate}
+              chooseFixture={chooseFixture}
+              edit={edit}
+              setSide={setSide}
+              setPrice={setPrice}
+              setQuantity={setQuantity}
+              setCap={setCap}
+              setTolerance={setTolerance}
+              setPlanner={setPlanner}
+              setRaw={setRaw}
+              setUseRaw={setUseRaw}
+              onSubmit={diagnose}
+              onStop={stop}
+            />
+            <div className="right">
+              <ResultPanel
+                busy={busy}
+                error={error}
+                run={run}
+                submittedPlanner={submittedPlanner}
+                submittedFixture={submittedFixture}
+                resultRef={resultRef}
+              />
+              <ProposalPanel
+                run={run}
+                busy={busy}
+                onCopy={copyProposal}
+                onExport={exportReport}
+                copyMessage={copyMessage}
+              />
+            </div>
           </div>
-        </div>
-      </main>
-      <footer className="footer">
-        <p>
-          Meder · Synthetic diagnostic application. Not exchange acceptance,
-          investment advice, or proof of competition eligibility.
-        </p>
-        <p>Exact arithmetic. Bounded tools. Zero financial writes.</p>
-      </footer>
-    </div>
+        </main>
+        <SafetyStrip />
+      </div>
+    </TooltipProvider>
   );
 }

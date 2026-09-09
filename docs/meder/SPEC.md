@@ -137,6 +137,14 @@ The private access panel explicitly unlocks and locks model access. Its password
 
 The UI exports the server-provided `Snapshot.export`, built from allowlisted fields, rather than serializing the full diagnostic snapshot. Imported evidence remains visibly user-reported; neither import nor export turns it into an observed exchange response.
 
+### Route map and shell (v3.1, Bun-native redesign)
+
+- `/` — static landing page (hero, promises, how-it-works, honesty list, call to action). No diagnostic controls.
+- `/app` — the diagnostic tool: full-viewport grid shell (top bar, input card, diagnosis + proposal cards, safety strip). No fixed max-width; gutter is `clamp(1rem, 4vw, 5rem)`.
+- `/meder` — permanent redirect to `/app`.
+
+The three regions above are unchanged in contract; the shell additionally provides a dark/light theme toggle (`data-theme` on `<html>`, persisted in `localStorage`), help text behind per-field tooltips, and a single persistent disclaimer in the safety strip whose "About safety" panel carries the full reassurance copy. Toolchain: Bun for install/scripts, Node 24 for the Next.js runtime, `tsx --test` for the test suite; see `RUNBOOK.md`.
+
 ## 7. Acceptance and non-goals
 
 Every core fixture must produce the specified outcome. Unit/property tests must cover exact arithmetic, lower/upper bounds, unchanged protected fields, disabled price rules, off-grid minQty, hostile inputs, stale/missing evidence, and no upward correction. Integration tests cover immutable evidence binding, cross-session reads, cancellation, timeouts, explicit mode transitions, and provider failure. Browser tests cover all three journeys, trace/source labels, copy/export, and keyboard operation.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type FormEvent } from "react";
-import type { useModelAccess } from "../../src/client/use-model-access";
+import type { useModelAccess } from "@/src/client/use-model-access";
 
 export function ModelAccessPanel({ access, diagnosing }: { access: ReturnType<typeof useModelAccess>; diagnosing: boolean }) {
   const keyInput = useRef<HTMLInputElement>(null);

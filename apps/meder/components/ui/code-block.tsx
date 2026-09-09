@@ -36,8 +36,8 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 }
 function resolvePageMode(): 'dark' | 'light' {
     const root = document.documentElement
-    if (root.classList.contains('dark')) return 'dark'
-    if (root.classList.contains('light')) return 'light'
+    if (root.dataset.theme === 'dark' || root.classList.contains('dark')) return 'dark'
+    if (root.dataset.theme === 'light' || root.classList.contains('light')) return 'light'
     const attr = root.getAttribute('data-theme')
     if (attr === 'dark') return 'dark'
     if (attr === 'light') return 'light'

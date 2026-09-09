@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   TriangleAlert,
 } from "lucide-react";
+import { MeshGradient } from "@paper-design/shaders-react";
 import FluidOrb from "@/components/ui/fluid-orb";
 import { StepPlayer } from "@/components/ui/step-player";
 import { QuantityCounter } from "@/components/meder/quantity-counter";
@@ -23,18 +24,32 @@ const reveal = {
 
 function HeroBackdrop() {
   const reduced = useReducedMotion();
+  // WebGL shader only on wider viewports with a working GL context; small
+  // screens, reduced motion and GL-less browsers get the static CSS glows.
+  const [shader, setShader] = useState(false);
+  useEffect(() => {
+    const gl = document.createElement("canvas").getContext("webgl");
+    setShader(
+      Boolean(gl) && !reduced && !matchMedia("(max-width: 767px)").matches,
+    );
+  }, [reduced]);
   return (
     <div className="lp-backdrop" aria-hidden="true">
-      <motion.div
-        className="lp-glow lp-glow-a"
-        animate={reduced ? undefined : { x: [0, 40, -20, 0], y: [0, -30, 10, 0] }}
-        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="lp-glow lp-glow-b"
-        animate={reduced ? undefined : { x: [0, -50, 20, 0], y: [0, 20, -15, 0] }}
-        transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {shader ? (
+        <MeshGradient
+          className="lp-shader"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          colors={["#f4f3ee", "#dfeee8", "#a9cdc0", "#f8ecd8"]}
+          speed={0.25}
+          distortion={0.4}
+          swirl={0.15}
+        />
+      ) : (
+        <>
+          <div className="lp-glow lp-glow-a" />
+          <div className="lp-glow lp-glow-b" />
+        </>
+      )}
     </div>
   );
 }
@@ -268,6 +283,10 @@ export default function Landing() {
         <p>
           Meder · Synthetic diagnostic application. Not exchange acceptance,
           investment advice, or proof of competition eligibility.
+        </p>
+        <p className="lp-attribution">
+          Interface components adapted from Rare UI (MIT) · Icons by Lucide
+          (ISC) · Shader by Paper Design (MIT)
         </p>
       </footer>
     </div>
