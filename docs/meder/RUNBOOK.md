@@ -14,6 +14,8 @@ npm run dev -- --port 3000
 
 Open `http://localhost:3000` or `http://127.0.0.1:3000`. Both `/` and `/meder` open the same application. In Hoplite, use the managed Preview; the repository setup/run configuration and effective project overrides launch this app.
 
+**Development lifecycle:** fully restart the development process after changes to `src/server`, `src/domain`, or `fixtures`, or after changing server secrets. Client-only edits can use normal hot reload. Server hot reload can retain an old in-memory store alongside a newly evaluated metadata-validation identity, causing safe-but-failing diagnoses; it can also retain old access-gate callbacks. A fresh development process is required before integrated verification. Restart discards reports/grants and resets the process budget, so it is not a way to enforce a durable spending cap. Automatic coordinated server-state reload is not implemented.
+
 The research reader remains separate:
 
 ```sh
@@ -39,7 +41,7 @@ npm run test:browser
 
 `MEDER_TEST_URL` can target another local test origin. The Playwright configuration starts its own development server only when `CI` is set. `.github/workflows/meder.yml` runs the reader, domain, server, production-build, and browser checks; a committed workflow is not evidence that hosted CI has passed.
 
-Historical baseline `4a576289e26afdac6b8281b1c22011cdc2cf397c` recorded 69 Node, nine browser and six reader tests plus typecheck/build passing. Its [hosted CI run 34292462782 passed](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). The later private model-access server checkpoint has 86 Node tests and typecheck passing; final aggregate browser/build verification is pending. These separate checkpoints do not prove a genuine provider run. Submission is USER-REPORTED at `2026-09-08T23:59:39.346Z`; see [submission history](SUBMISSION.md) for unverified receipt/eligibility gates and the historical draft. No finalized demo video is verified: a stalled attempt was stopped and its private artifact remains unverified.
+Historical baseline `4a576289e26afdac6b8281b1c22011cdc2cf397c` recorded 69 Node, nine browser and six reader tests plus typecheck/build passing. Its [hosted CI run 34292462782 passed](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). The later private model-access checkpoint separately passed **87 Node tests, 20 browser tests, six reader tests, typecheck, and production build**, with zero reported production dependency vulnerabilities. Access UI cases use controlled transport; server tests exercise the real handlers with injected provider responses. These checks do not prove genuine provider use or hosted CI for the later revision. Submission is USER-REPORTED at `2026-09-08T23:59:39.346Z`; see [submission history](SUBMISSION.md) for unverified receipt/eligibility gates and the historical draft. No finalized demo video is verified: a stalled attempt was stopped and its private artifact remains unverified.
 
 Repository reader regression tests:
 

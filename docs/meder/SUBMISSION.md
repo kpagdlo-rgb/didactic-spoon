@@ -2,7 +2,7 @@
 
 ## Current status: USER-REPORTED submission
 
-The user said **“submitted, now continue development”**, received at `2026-09-08T23:59:39.346Z`. This records the user's report, not an independently authenticated submission receipt, exact submission time, eligibility determination or acceptance. The actual submitted description, selected theme, source revision and public video URL are not known. Do not reconstruct an exact form payload from the preparatory text below or recommend a duplicate submission.
+The user **reported submitting and asked to continue development** in a message received at `2026-09-08T23:59:39.346Z`. This records the user's report, not an independently authenticated submission receipt, exact submission time, eligibility determination or acceptance. The actual submitted description, selected theme, source revision and public video URL are not known. Do not reconstruct an exact form payload from the preparatory text below or recommend a duplicate submission.
 
 The latest **published pre-report source baseline** is [`4a576289e26afdac6b8281b1c22011cdc2cf397c`](https://github.com/kpagdlo-rgb/didactic-spoon/tree/4a576289e26afdac6b8281b1c22011cdc2cf397c). Its [hosted CI run 34292462782 succeeded](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). This pins code available before the report; it does **not** establish the exact code submitted. Later private model-access development is a separate checkpoint and must not be represented as part of that baseline or retroactive submission proof.
 
@@ -22,7 +22,7 @@ The fields therefore are not wholly unknown. The earlier public guide phrase “
 
 Historical local baseline verification was 69 Node tests, nine browser tests, six reader tests, typecheck and build passing. The repair screenshot was inspected and privately shared, not a public judging artifact. A later recording attempt stalled and its process was stopped; the unverified private artifact is **not finalized video proof**. No actual finalized public video, submitted post URL, genuine provider trace or live exchange run is verified here. User-reported submission does not close these evidence gaps.
 
-Post-submission private access adds a separate shared demo key, short-lived session grant and explicit unlock/lock without authorizing trading writes. See the current [runbook](RUNBOOK.md#optional-real-model-gate) and [checklist](TODO.md#p5--post-submission-private-model-access). Server checkpoint: 86 Node tests and typecheck passed; final aggregate browser/build checks remain pending.
+Post-submission private access adds a separate shared demo key, short-lived session grant and explicit unlock/lock without authorizing trading writes. See the current [runbook](RUNBOOK.md#optional-real-model-gate) and [checklist](TODO.md#p5--post-submission-private-model-access). Its separate local checkpoint passed 87 Node tests, 20 browser tests, six reader tests, typecheck and production build. This is later development evidence, not part of the pre-report submission baseline or a genuine provider run.
 
 ## Historical preparatory draft — not a resubmission recommendation
 

@@ -619,3 +619,31 @@ output {
     animation: none;
   }
 }
+.model-access {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 18px;
+}
+.access-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.access-heading h3 {
+  font-size: 13px;
+  margin: 0;
+}
+.model-access .field {
+  margin-bottom: 6px;
+}
+.model-access button {
+  font-size: 12px;
+  margin-top: 12px;
+}
+.access-error {
+  color: var(--danger);
+  font-size: 12px;
+  margin: 12px 0 0;
+}

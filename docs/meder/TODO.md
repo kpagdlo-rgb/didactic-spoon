@@ -2,7 +2,7 @@
 
 **Historical rebuild verification checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. Local verification recorded 69 Node tests (including 1,000 generated exhaustive-reference solver cases), nine Playwright tests, six separate Python reader tests, typecheck, and production build passing. Verification followed a successful effective setup rerun of npm clean install and Python dependency installation; the production dependency audit reported zero vulnerabilities. Latest published pre-report source: `4a576289e26afdac6b8281b1c22011cdc2cf397c`. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), [runbook](RUNBOOK.md), and [submission history](SUBMISSION.md).
 
-**Post-submission checkpoint:** user reported “submitted, now continue development” at `2026-09-08T23:59:39.346Z`. This is USER-REPORTED, not a verified receipt or exact submitted source/payload. The private model-access server milestone has 86 passing Node tests and passing typecheck; final aggregate browser/build verification remains pending. Historical results above are not replaced by this checkpoint.
+**Post-submission checkpoint:** the user reported submitting and asked to continue development in a message received at `2026-09-08T23:59:39.346Z`. This is USER-REPORTED, not a verified receipt or exact submitted source/payload. The private model-access milestone separately passed 87 Node tests, 20 browser tests, six reader tests, typecheck and production build, with zero reported production dependency vulnerabilities. Historical results above are not replaced by this checkpoint.
 
 `[x]` means implemented and covered by the checkpoint evidence; `[ ]` means open or explicitly partial. Local tests do not establish a working real-model agent, live exchange access, eligibility, production readiness, or submission. This checklist never authorizes financial access.
 
@@ -73,17 +73,17 @@ Implemented in `app/meder.tsx` and `app/globals.css`, with routes `app/page.tsx`
 
 ## P5 — post-submission private model access
 
-Implementation statuses below are subject to final integrated UI/browser/build verification in M05; server evidence is 86 passing Node tests and typecheck, not genuine provider use.
+Implementation statuses below are supported by M05. Access UI cases use controlled transport and server cases exercise the real handlers with injected provider responses; neither establishes genuine provider use.
 
 - [x] M01: `src/server/model-access.ts`, `http.ts`, `app/api/model-access/`: separate 32–256 non-space printable ASCII shared key, bounded 1,024-byte closed login/logout, fail-closed configuration and ten login attempts/minute globally per process.
 - [x] M02: Signed HttpOnly session grant with fixed 15-minute monotonic expiry; rotation/expiry/logout revoke access and cancel only affected sessions' model runs. Provider/tool-dispatch rechecks and idle sweep enforce revocation. Anonymous deterministic diagnosis remains available.
-- [x] M03: `app/model-access-panel.tsx`, `src/client/use-model-access.ts`, `app/meder.tsx`: explicit unlock/lock, key cleared without browser persistence, configuration/capacity status, revoked model selection disabled without silent fallback. Final browser proof remains M05.
+- [x] M03: `app/model-access-panel.tsx`, `src/client/use-model-access.ts`, `app/meder.tsx`: explicit unlock/lock, key cleared without browser persistence, configuration/capacity status, revoked model selection disabled without silent fallback. Unconfirmed lock remains retryable when status checks fail; successful refresh clears stale capability warnings.
 - [x] M04: README, runbook and spec distinguish the shared demo key from provider/exchange credentials; preserve private gateway/provider spend requirements and unchanged one-concurrent/default-ten process budget. No real provider or live exchange access configured or verified.
-- [ ] M05: Complete aggregate Node, typecheck, browser, production build and relevant reader checks; inspect fresh access-panel evidence and review/publish post-submission source. Do not reuse baseline CI or the historical screenshot as verification of this milestone.
+- [x] M05: 87 Node tests, 20 browser tests, six reader tests, typecheck, production build and production dependency audit passed. Reviewed queued-run expiry containment and access failure recovery. Fresh managed Preview returned `REPAIR_PROPOSED` / `0.001` with model access locked/unconfigured and no fresh browser errors; current screenshot shared privately. A fresh development runtime restores exact repair after server edits; the runbook documents the hot-reload limitation. Baseline CI does not verify this later source.
 
 ## Continue in dependency order
 
-1. Complete M05 integrated verification and publish the post-submission access-gate milestone separately from the pre-report baseline. A finalized interaction video remains unverified.
+1. After publication, inspect hosted CI for the post-submission access-gate milestone separately from the pre-report baseline. A finalized interaction video remains unverified.
 2. If authorized provider configuration becomes available, use a private authenticated instance to verify a genuine tool-selected run; otherwise retain the tested synthetic delivery label.
 3. Resolve G01 and the V09 receipt gate only through authorized confirmation, not assumptions about the supplied form text or user report.
 4. Continue product development without backdating improvements into the reported submission or recommending resubmission. Any later competition update requires separate authorization; build completion cannot force an external gate to pass.
@@ -92,6 +92,7 @@ The original 22:28 UTC planning estimate and 23:30 feature-freeze recommendation
 
 ## Deferred, not hidden in the MVP
 
+- [ ] Coordinated automatic server/domain hot-reload disposal. Fully restart development after server/domain/fixture edits; see the [runbook](RUNBOOK.md#run-locally). Do not bypass metadata identity validation to hide a stale-runtime failure.
 - [ ] Authenticated read-only order reconciliation and consent.
 - [ ] Fee-inclusive funds budget, balances, and account-dependent constraints.
 - [ ] Other order types, price correction, SELL correction, and additional markets.

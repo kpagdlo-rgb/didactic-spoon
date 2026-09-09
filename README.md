@@ -59,9 +59,11 @@ screenshot was captured, inspected, and shared privately in the thread; no
 finalized demonstration video or real-model trace is verified. A later recording
 attempt stalled and was stopped; its unverified private artifact is not video proof.
 Hosted CI for the published baseline subsequently [passed (run 34292462782)](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782).
-These historical results do not verify later changes. At the post-submission access-gate
-checkpoint, the server implementation has 86 passing Node tests and passing typecheck;
-aggregate browser/build verification is pending.
+These historical results do not verify later changes. The post-submission access-gate
+checkpoint separately passed **87 Node tests, 20 Playwright tests, six reader tests,
+typecheck, and production build**; the production dependency audit reported zero
+vulnerabilities. Access UI tests use controlled transport, while server tests exercise
+the real handlers with injected provider responses. Neither establishes genuine model use.
 
 Live mode is disabled and locally returns HTTP 451 without making a Binance
 request. This enforces the historical sandbox restriction, not a newly observed

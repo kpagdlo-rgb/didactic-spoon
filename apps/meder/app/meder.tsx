@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { DiagnosisResult } from "../src/domain/types";
 import { parseClosedJson } from "../src/domain/json";
+import { useModelAccess } from "../src/client/use-model-access";
+import { ModelAccessPanel } from "./model-access-panel";
 
 type FixtureId = "repairable" | "budget_refusal" | "ambiguous" | "off_grid_min";
 type Planner = "deterministic" | "model";
@@ -85,7 +87,8 @@ export default function Meder() {
   const [cap, setCap] = useState("0.123");
   const [tolerance, setTolerance] = useState("allow_all_downward");
   const [planner, setPlanner] = useState<Planner>("deterministic");
-  const [modelConfigured, setModelConfigured] = useState(false);
+  const modelAccess = useModelAccess();
+  const modelAvailable = modelAccess.state.planners.model;
   const [raw, setRaw] = useState("");
   const [useRaw, setUseRaw] = useState(false);
   const [run, setRun] = useState<Run | null>(null);
@@ -102,13 +105,7 @@ export default function Meder() {
   const stopRequested = useRef(false);
 
   useEffect(() => {
-    const abort = new AbortController();
-    fetch("/api/capabilities", { signal: abort.signal, cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => setModelConfigured(data?.planners?.model === true))
-      .catch(() => {});
     return () => {
-      abort.abort();
       controller.current?.abort();
     };
   }, []);
@@ -188,7 +185,11 @@ export default function Meder() {
   }
   async function diagnose(event: FormEvent) {
     event.preventDefault();
-    if (busy) return;
+    if (busy || modelAccess.pending) return;
+    if (planner === "model" && !modelAvailable) {
+      setError("Model access is unavailable. Unlock access or explicitly choose deterministic mode.");
+      return;
+    }
     invalidate();
     const token = generation.current;
     const abort = new AbortController();
@@ -271,6 +272,7 @@ export default function Meder() {
     } finally {
       clearTimeout(timeout);
       if (token === generation.current) setBusy(false);
+      void modelAccess.refresh();
     }
   }
   async function stop() {
@@ -564,11 +566,15 @@ export default function Meder() {
                       <option value="deterministic">
                         Deterministic · exact local rules
                       </option>
-                      <option value="model" disabled={!modelConfigured}>
+                      <option value="model" disabled={!modelAvailable}>
                         Model-guided ·{" "}
-                        {modelConfigured
-                          ? "configured provider"
-                          : "provider not configured"}
+                        {!modelAccess.checked ? "access unverified"
+                          : !modelAccess.state.providerConfigured ? "provider not configured"
+                          : !modelAccess.state.modelAccess.configured ? "access key not configured"
+                          : !modelAccess.state.modelAccess.authorized ? "locked · unlock below"
+                          : modelAccess.state.modelBudget?.remaining === 0 ? "run budget exhausted"
+                          : (modelAccess.state.modelBudget?.active ?? 0) > 0 ? "another run is active"
+                          : "unlocked private session"}
                       </option>
                     </select>
                     <p className="help">
@@ -578,9 +584,10 @@ export default function Meder() {
                     </p>
                   </div>
                 </fieldset>
-                <button className="primary full" type="submit" disabled={busy}>
+                <button className="primary full" type="submit" disabled={busy || modelAccess.pending || (planner === "model" && !modelAvailable)}>
                   {busy ? "Diagnosing…" : "Diagnose order"}
                 </button>
+                {planner === "model" && !modelAvailable && !busy && <p className="help">Model mode is unavailable. Unlock access below or explicitly select deterministic mode. No automatic fallback occurs.</p>}
                 {busy && (
                   <button
                     className="full"
@@ -595,6 +602,7 @@ export default function Meder() {
                   A proposal is not an order. Nothing is executed.
                 </p>
               </form>
+              <ModelAccessPanel access={modelAccess} diagnosing={busy} />
             </div>
           </section>
           <div className="right">

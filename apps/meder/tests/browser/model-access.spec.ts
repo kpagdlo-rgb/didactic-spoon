@@ -3,6 +3,43 @@ import { test, expect, type Page } from "@playwright/test";
 const demoKey = "synthetic-demo-access-key-for-browser-tests-only";
 const wrongKey = "synthetic-wrong-access-key-for-browser-tests-only";
 
+test("an unconfirmed lock remains retryable when capabilities also fail", async ({ page }) => {
+  let authorized = true;
+  let capabilitiesFail = false;
+  let attempts = 0;
+  const diagnoses = await blockDiagnoses(page);
+  await page.route("**/api/capabilities", route => capabilitiesFail
+    ? route.fulfill({ status: 503, json: { error: "unavailable" } })
+    : route.fulfill({ json: capabilities({ authorized }) }));
+  await page.route("**/api/model-access/logout", async route => {
+    attempts++;
+    if (attempts === 1) {
+      capabilitiesFail = true;
+      await route.fulfill({ status: 500, json: { error: "unavailable" } });
+    } else {
+      authorized = false;
+      capabilitiesFail = false;
+      await route.fulfill({ json: { modelAccess: { configured: true, authorized: false } } });
+    }
+  });
+  await openApp(page);
+  await expect(modelOption(page)).toBeEnabled();
+  await runtime(page).selectOption("model");
+  await page.getByRole("button", { name: "Lock model access", exact: true }).click();
+  await expect(panel(page).getByRole("alert")).toContainText("access may still be active");
+  await expect(panel(page).locator(".badge")).toHaveText("UNVERIFIED");
+  await expect(diagnose(page)).toBeDisabled();
+  await expect(runtime(page)).toHaveValue("model");
+  expect(attempts).toBe(1);
+  await page.getByRole("button", { name: "Retry locking model access", exact: true }).click();
+  await expect(panel(page).locator(".badge")).toHaveText("LOCKED");
+  await expect(panel(page).getByRole("status")).toContainText("Model access locked");
+  await expect(panel(page).getByRole("alert")).toHaveCount(0);
+  await expect(diagnose(page)).toBeDisabled();
+  expect(attempts).toBe(2);
+  expect(diagnoses).toEqual([]);
+});
+
 function capabilities({ authorized = false, configured = true, providerConfigured = true } = {}) {
   return {
     providerConfigured,
