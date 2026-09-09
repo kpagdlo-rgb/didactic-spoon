@@ -3,8 +3,8 @@
 - **Product name:** Meder
 - **Internal slug:** `meder`
 - **Previous concept name:** OrderMedic
-- **Version:** implementation checkpoint v2, 8 September 2026
-- **State:** tested synthetic diagnostic application; real-model and external release gates open
+- **Version:** post-submission private model-access checkpoint v3, 9 September 2026
+- **State:** tested synthetic diagnostic application; submission USER-REPORTED; receipt, real-model and external acceptance gates open
 
 > **Order clarity. Without another trade.**
 
@@ -12,7 +12,7 @@ Meder explains a rejected Binance Spot limit order, proposes the smallest permit
 
 ## Product identity
 
-Use **Meder** in the application title, package/workspace name, README, demo, and future submission. Keep the earlier OrderMedic blueprint unchanged as historical technical context; it is not a second product. Name availability, domains, and trademarks have not been checked.
+Use **Meder** in the application title, package/workspace name, README, demo, and any authorized future materials. Keep the earlier OrderMedic blueprint unchanged as historical technical context; it is not a second product. Name availability, domains, and trademarks have not been checked.
 
 The tone is calm, precise, and nonjudgmental. Prefer “This quantity does not match the allowed step” over “You entered an invalid order.” Prefer “No correction fits your limit” over “Trade failed.” Avoid “safe trade,” “guaranteed acceptance,” or claims to recover funds.
 
@@ -55,18 +55,24 @@ Design choices in these files are engineering recommendations, not Binance rules
 
 1. A public time request from this sandbox returned HTTP 451 on 8 September at `20:57:27.679677Z`; further exchange probes stopped. Live mode remains disabled here. This does not establish the user's personal eligibility. Do not evade the restriction through hosts or proxies.
 2. The optional OpenAI Responses adapter and bounded tool runtime are implemented and boundary-tested with fake providers. Server configuration is currently absent; no genuine model tool invocation has been observed. Do not claim a verified working agent.
-3. Track A read-only/fixture acceptance and authenticated eligibility rules remain unverified. Meder's diagnostic MVP does not demonstrate a qualifying Track B trade.
+3. Track A read-only/fixture acceptance and the user's eligibility remain unverified. The user supplied form text describing an agent **or workflow**, theme choices, a public video post, replication instructions, KYC/jurisdiction restrictions and creativity criteria; this is user-provided evidence, not independently authenticated form confirmation. Meder's diagnostic MVP does not demonstrate a qualifying Track B trade.
 4. The independent `apps/meder` application replaces the earlier embedded demo. The Python reader remains separate on port 3001. Local build and browser verification are not a production deployment claim.
 
 ## Implemented delivery and verification checkpoint
 
 The Node 24 application pins Next.js 16.3.4, React 19.2.8, and TypeScript 5.9.3 with an npm lockfile. Closed structural validators, a single BigInt/rational solver, versioned controller-owned fixtures, immutable evidence, bounded read-only tools, session-bound create/poll/cancel routes, sanitized export, and explicit deterministic/model controls are implemented. Provider prose is discarded; explanations and verdicts come from the solver.
 
-The final local verification checkpoint on 8 September 2026 records typecheck/build passing, 69 Node tests passing (including 1,000 generated exhaustive-reference cases), nine Playwright tests passing, and six separate Python reader tests passing. Browser coverage includes repair, refusal, ambiguity, off-grid quantity, exact SELL, JSON input, narrow-screen focus, copy/export, controlled-transport UI cancellation, and imported evidence. Backend cancellation is tested separately. An actual managed-preview Host-shaped HTTP request returned 200. The repair screenshot was captured, inspected, and shared privately in the thread; no video or real-model trace has been recorded. These are checkpoint results, not a rolling certification.
+The historical local verification checkpoint on 8 September 2026 records typecheck/build passing, 69 Node tests passing (including 1,000 generated exhaustive-reference cases), nine Playwright tests passing, and six separate Python reader tests passing. Browser coverage includes repair, refusal, ambiguity, off-grid quantity, exact SELL, JSON input, narrow-screen focus, copy/export, controlled-transport UI cancellation, and imported evidence. Backend cancellation is tested separately. An actual managed-preview Host-shaped HTTP request returned 200. The repair screenshot was captured, inspected, and shared privately in the thread. A subsequent video attempt stalled and was stopped; its unverified private artifact does not complete video proof. No finalized demonstration video or real-model trace is verified. These are checkpoint results, not a rolling certification.
 
-The exact effective setup script was successfully rerun (npm clean install and Python dependencies), followed by passing verification; the production dependency audit reported zero vulnerabilities. `.github/workflows/meder.yml` now defines CI; no hosted CI result has been observed. Dependency audit and local build success are not a security review or competition acceptance.
+The exact effective setup script was successfully rerun (npm clean install and Python dependencies), followed by passing verification; the production dependency audit reported zero vulnerabilities. Hosted CI for the latest published pre-report baseline `4a576289e26afdac6b8281b1c22011cdc2cf397c` [passed (run 34292462782)](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). Dependency audit and CI success are not a security review or competition acceptance.
 
-The app performs no Binance reads: disabled live requests return a local 451. OpenAI network access is optional and server-only. Signed HttpOnly sessions and reports expire after 15 minutes in single-process memory; restart loses state. Model admission permits one concurrent run and defaults to 10 admitted runs per process lifetime (`MEDER_MODEL_RUN_BUDGET`, integer 1–100). Failure/cancellation does not refund admission. Production requires an exact `MEDER_ALLOWED_ORIGIN`; a model-enabled deployment additionally requires an authenticated private gateway and provider spending limits. Session isolation and origin checks are not user authentication or a dollar cap.
+### Submission report and later development
+
+At `2026-09-08T23:59:39.346Z` (trusted message receipt time), the user said “submitted, now continue development.” Submission is **USER-REPORTED**, not independently confirmed; exact form payload, receipt, eligibility and acceptance remain unverified. The source baseline above identifies published code available before the report, not the exact submitted revision. [Submission history](SUBMISSION.md) preserves the earlier preparatory draft without recommending resubmission.
+
+The post-submission milestone adds a server-enforced private shared-key grant and explicit UI unlock/lock. `MEDER_MODEL_ACCESS_KEY` must be 32–256 non-space printable ASCII characters and distinct from provider/exchange credentials. Provider configuration alone cannot authorize anonymous paid calls. Same-origin bounded login grants the existing signed HttpOnly session 15 minutes of model access using monotonic expiry; 10 login attempts/minute are shared globally per process. Logout, expiry, and observed key rotation cancel only affected sessions' active model runs. Anonymous deterministic diagnosis remains available. The browser clears the entered key without persistent storage; revoked model mode stays selected but disabled, never silently falling back. Missing settings fail closed. Server checkpoint: 86 Node tests and typecheck passed; final aggregate browser/build verification remains pending. No genuine provider or live exchange run was performed.
+
+The app performs no Binance reads: disabled live requests return a local 451. OpenAI network access is optional and server-only. Signed HttpOnly sessions, access grants and reports use single-process memory; restart loses state. Model admission still permits one concurrent run and defaults to 10 admitted runs per process lifetime (`MEDER_MODEL_RUN_BUDGET`, integer 1–100). Failure/cancellation does not refund admission. Production requires an exact `MEDER_ALLOWED_ORIGIN`; a model-enabled deployment additionally requires an authenticated private gateway and provider spending limits. The shared-key gate is not full production authentication; session isolation and origin checks are not a dollar cap.
 
 ## Definition of release
 

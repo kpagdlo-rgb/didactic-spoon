@@ -1,6 +1,6 @@
-# Meder — implementation specification v2
+# Meder — implementation specification v3
 
-**Status:** implementation baseline updated 8 September 2026. The independent synthetic application and test suites exist; genuine model use, live data, authenticated eligibility, and submission remain unverified. Requirements below preserve the original financial boundary; future live requirements are not claims of a shipped live adapter. [Manifest](MANIFEST.md) · [Build checklist](TODO.md) · [Drift audit](PLAN-AUDIT.md).
+**Status:** post-submission private model-access milestone, 9 September 2026. The independent synthetic application and test suites exist; submission is USER-REPORTED, while receipt, eligibility/acceptance, genuine model use and live data remain unverified. Requirements below preserve the original financial boundary; future live requirements are not claims of a shipped live adapter. [Manifest](MANIFEST.md) · [Build checklist](TODO.md) · [Drift audit](PLAN-AUDIT.md).
 
 ## 1. Architecture and delivery boundary
 
@@ -18,7 +18,7 @@ Browser → byte/schema gate → normalized immutable run record
                      sanitized report → browser
 ```
 
-When configured, the model chooses permitted diagnostic tools. Provider prose is deliberately discarded: the solver supplies authoritative explanations and verdicts. The model cannot change intent, budget, metadata, source mode, or arithmetic. Deterministic mode is labeled separately and cannot demonstrate model agency. These are server-owned function tools, not hosted MCP or installed Binance Skills.
+When configured and explicitly unlocked for the session, the model chooses permitted diagnostic tools. Provider prose is deliberately discarded: the solver supplies authoritative explanations and verdicts. The model cannot change intent, budget, metadata, source mode, or arithmetic. Deterministic mode is labeled separately and cannot demonstrate model agency. These are server-owned function tools, not hosted MCP or installed Binance Skills.
 
 ## 2. Input and intent
 
@@ -105,7 +105,11 @@ Implemented routes:
 - `POST /api/diagnoses`: bounded closed envelope `{mode, planner, fixtureId, input}`; server owns mode validation and run creation. Admission returns HTTP 200 with an initial `running` snapshot, not a finished verdict; the client polls GET. Bad schema returns 400; oversize 413; disabled live mode 451; missing model configuration 503; busy/exhausted admission 429. This local 451 makes no Binance request and is not fresh exchange evidence. Never return raw provider errors.
 - `GET /api/diagnoses/:id`: sanitized result, no raw payload. A random ID is not authorization: bind reads to an HttpOnly session, reject cross-session access, use no-store responses, and expire records after 15 minutes. Missing/expired/unauthorized IDs return 404.
 - `POST /api/diagnoses/:id/cancel`: session-owned cancellation only, no financial effect. Reject cross-origin POST requests; late results cannot overwrite a canceled run.
-- `GET /api/capabilities`: no-store source/planner availability, process budget and persistence limitations. Configured capability is not proof of a genuine model run.
+- `GET /api/capabilities`: no-store session-specific source/planner availability, `providerConfigured`, `modelAccess: {configured, authorized, expiresAt?}`, process budget and persistence limitations. `planners.model` requires provider configuration, a configured gate, a valid session grant, remaining budget and no active model run. Configured capability is not proof of a genuine model run.
+- `POST /api/model-access`: same-origin JSON, no query string, closed `{accessKey}` envelope bounded to 1,024 UTF-8 bytes. `MEDER_MODEL_ACCESS_KEY` and submitted keys must contain 32–256 non-space printable ASCII characters. A successful login issues/reuses the signed HttpOnly session and returns only `{modelAccess: {configured, authorized, expiresAt}}`, never a key, hash or token. Ten login attempts per minute globally per process include successful and malformed same-origin attempts. Wrong key/missing grant returns `MODEL_ACCESS_REQUIRED` (403), unavailable gate/provider on model admission returns `MODEL_UNAVAILABLE` (503), and exhausted attempt capacity returns 429. Login may authorize a grant without a configured provider, but cannot enable model calls by itself.
+- `POST /api/model-access/logout`: same-origin JSON closed `{}`, no query string, 1,024-byte limit. Revoke the current session's grant and cancel its active model runs, retaining the session and deterministic reports. Return `{modelAccess: {configured, authorized: false}}`.
+
+The post-submission private-demo gate binds access to a fixed 15-minute monotonic grant, never to browser-stored credentials. Missing/invalid server keys fail closed; rotation/removal revokes existing grants. Recheck authorization before each provider request and before dispatching its returned tool calls. An idle sweep checks expiry/rotation at most one second apart while grants exist; logout cancels immediately. Only the affected owners' model runs are canceled; deterministic work remains anonymous and available. Provider configuration alone cannot authorize paid calls. This shared-key gate is not full production authentication or distributed abuse protection.
 
 Sessions use signed HttpOnly, SameSite=Strict cookies (Secure for HTTPS). Run retention and session lifetime are 15 minutes; the signing secret and store are process-local and lost on restart. Use one server process, not serverless/multi-replica persistence assumptions. Production POSTs require `MEDER_ALLOWED_ORIGIN` equal to the exact external origin. Before adding a provider key, put the whole deployment and API behind an authenticated private gateway: neither same-origin checks nor session cookies authenticate users.
 
@@ -129,6 +133,8 @@ One screen, three regions:
 
 Use keyboard-operable controls, visible focus, labeled fields, readable contrast, and a polite live region for completion. Do not unexpectedly move focus while diagnosing. Copy/export excludes identifiers, free-text rejection content, credentials, and internal session/evidence tokens; explain any redaction.
 
+The private access panel explicitly unlocks and locks model access. Its password field accepts only the deployment's shared demo key, never an OpenAI/Binance key; clear the field on submit and do not persist the secret in browser storage or React state. Show configuration, authorization, expiry and capacity separately. Lock/expiry/revocation keeps an already selected model option selected but disables model diagnosis; the user must explicitly choose deterministic mode, never receive a silent fallback. Capability failures fail closed for model mode without disabling deterministic diagnostics.
+
 The UI exports the server-provided `Snapshot.export`, built from allowlisted fields, rather than serializing the full diagnostic snapshot. Imported evidence remains visibly user-reported; neither import nor export turns it into an observed exchange response.
 
 ## 7. Acceptance and non-goals
@@ -137,4 +143,4 @@ Every core fixture must produce the specified outcome. Unit/property tests must 
 
 Zero financial write tools, routes, signing code, credentials, or exchange account connections are permitted. A fake model must not count as real-model verification. Existing document-reader tests do not verify Meder.
 
-Release artifacts: tested source + lockfile, setup instructions, limitations, sanitized real-model trace if available, and a short demonstration. Submission/eligibility is a separate authenticated gate; neither this spec nor an app build proves acceptance.
+Release artifacts: tested source + lockfile, setup instructions, limitations, sanitized real-model trace if available, and a short demonstration. Submission was user-reported at `2026-09-08T23:59:39.346Z`; receipt, exact submitted payload and eligibility/acceptance remain unverified. Latest published pre-report source: `4a576289e26afdac6b8281b1c22011cdc2cf397c`. The private model-access milestone is later development, not retroactive submission evidence. The historical 69 Node / nine browser / six reader test checkpoint remains distinct from the post-submission 86 Node tests and typecheck pass; final aggregate browser/build verification is pending. Neither this spec nor an app build proves acceptance.

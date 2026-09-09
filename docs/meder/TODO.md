@@ -1,6 +1,8 @@
 # Meder — implementation checklist and remaining delivery gates
 
-**Final rebuild verification checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. Local verification recorded 69 Node tests (including 1,000 generated exhaustive-reference solver cases), nine Playwright tests, six separate Python reader tests, typecheck, and production build passing. Verification followed a successful effective setup rerun of npm clean install and Python dependency installation; the production dependency audit reported zero vulnerabilities. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), [runbook](RUNBOOK.md), and [submission handoff](SUBMISSION.md).
+**Historical rebuild verification checkpoint:** 8 September 2026. The independent synthetic diagnostic app is implemented. Local verification recorded 69 Node tests (including 1,000 generated exhaustive-reference solver cases), nine Playwright tests, six separate Python reader tests, typecheck, and production build passing. Verification followed a successful effective setup rerun of npm clean install and Python dependency installation; the production dependency audit reported zero vulnerabilities. Latest published pre-report source: `4a576289e26afdac6b8281b1c22011cdc2cf397c`. See [plan audit](PLAN-AUDIT.md), [manifest](MANIFEST.md), [spec](SPEC.md), [runbook](RUNBOOK.md), and [submission history](SUBMISSION.md).
+
+**Post-submission checkpoint:** user reported “submitted, now continue development” at `2026-09-08T23:59:39.346Z`. This is USER-REPORTED, not a verified receipt or exact submitted source/payload. The private model-access server milestone has 86 passing Node tests and passing typecheck; final aggregate browser/build verification remains pending. Historical results above are not replaced by this checkpoint.
 
 `[x]` means implemented and covered by the checkpoint evidence; `[ ]` means open or explicitly partial. Local tests do not establish a working real-model agent, live exchange access, eligibility, production readiness, or submission. This checklist never authorizes financial access.
 
@@ -16,11 +18,11 @@
 
 | ID | Status | Evidence / remaining gate |
 | --- | --- | --- |
-| G01 | [ ] Open | Authenticated Track A eligibility, read-only/fixture acceptance, accepted demo environment, and private requirements remain unknown. User authorization and confirmation are required; do not retain private form/account data. See [submission handoff](SUBMISSION.md). |
+| G01 | [ ] Open | User-provided form text describes Track A agent **or workflow**, theme choices, public video platform/post URL, replication, KYC/jurisdiction restrictions and creativity criteria. These fields are no longer wholly unknown, but authenticated confirmation, personal eligibility and read-only/fixture acceptance remain unverified. Do not retain private account data. See [submission history](SUBMISSION.md). |
 | G02 | [ ] Partial | OpenAI Responses provider and server-only credential path implemented in `apps/meder/src/server/planner.ts`; currently unconfigured. One genuine permitted tool invocation has not been observed. |
 | G03 | [x] | Synthetic mode is explicit. `src/server/http.ts` rejects live mode locally with 451 and makes no Binance request; no silent fallback or host workaround. |
 | G04 | [x] | `apps/meder/package.json` and `package-lock.json`: Next.js 16.3.4, React 19.2.8, TypeScript 5.9.3; npm clean install/build verified on Node 24. |
-| G05 | [x] | Delivery class is **tested synthetic diagnostic application**, with an optional unverified model adapter; not a verified agent, live integration, or submitted entry. |
+| G05 | [x] | Delivery class is **tested synthetic diagnostic application**, with an optional unverified model adapter. Submission is USER-REPORTED, not independently verified; no verified agent or live integration claim. |
 
 Paths below are relative to `apps/meder` unless otherwise stated. Missing access is not solved by scripted model claims or proxy switching.
 
@@ -45,7 +47,7 @@ Paths below are relative to `apps/meder` unless otherwise stated. Missing access
 | A04 | [x] | `src/server/run-store.ts`, `src/domain/solver.ts`: sanitized tool/decision summaries and redacted export; no raw provider prose, free-text errors, identifiers, session/evidence tokens, or hidden reasoning in exported reports. |
 | A05 | [x] | `app/api/diagnoses/`, `app/api/capabilities/`, `src/server/http.ts`, `origin.ts`, `model-budget.ts`: create/poll/cancel, signed session isolation, no-store, fail-closed origins, deadlines and process-wide admission tested. Initial POST returns 200/running; completion is polled. |
 
-Model admission: one concurrent run; default 10 admitted runs per process lifetime, configurable integer 1–100. Failure/cancellation is not refunded. Production requires exact `MEDER_ALLOWED_ORIGIN`; model enablement requires a private authenticated deployment gateway and provider spend controls. Origin/session controls are not authentication, durable admission, or a dollar cap.
+Model admission: one concurrent run; default 10 admitted runs per process lifetime, configurable integer 1–100. Failure/cancellation is not refunded. The new private shared-key session grant is additionally required; provider configuration alone cannot authorize anonymous paid calls. Production requires exact `MEDER_ALLOWED_ORIGIN`; model enablement still requires a private authenticated deployment gateway and provider spend controls. The gate is not full production authentication, durable admission, or a dollar cap.
 
 ## P3 — Meder UI
 
@@ -65,16 +67,26 @@ Implemented in `app/meder.tsx` and `app/globals.css`, with routes `app/page.tsx`
 - [x] V04: Nine passing `tests/browser/meder.spec.ts` tests cover repair, budget refusal, ambiguity, off-grid, exact SELL, JSON input, copy/export, source labels, mobile focus, controlled-transport UI cancellation, and imported evidence. The keyboard-focus correction was tested; backend cancellation is independently covered by server tests.
 - [ ] V05: Observe and retain a sanitized genuine model-selected tool trace. Adapter/fake-provider tests do not satisfy this gate.
 - [x] V06: README/manifest/spec/checklist, [runbook](RUNBOOK.md), and [submission handoff](SUBMISSION.md) document setup, verification, source references, no financial writes, and remaining external gates.
-- [ ] V07: No short interaction video has been recorded. `.hoplite/artifacts/meder-standalone-repair.png` was captured, inspected, and shared privately in the thread; this establishes repair-screen appearance, not the repair → refusal → ambiguity video gate. Private screenshot publication is not a public judging artifact.
-- [ ] V08: Final integrated review is complete; source commit/publication is the remaining release operation. Setup, all nine browser tests, and repair-screen Preview evidence are established; an actual managed-preview Host-shaped HTTP request returned 200. `.github/workflows/meder.yml` is added but no hosted CI result is observed. Only branch `hoplite/mylasa-3fbb4210` is available; `main` does not exist at this checkpoint.
-- [ ] V09: Authenticated submission remains a user gate. Preserve public wording “Track A only: video/demo + GitHub, if applicable.” No submission or acceptance receipt has been verified.
+- [ ] V07: No finalized short interaction video is verified. The attempted recording stalled and was stopped; its private unverified artifact is not video proof. `.hoplite/artifacts/meder-standalone-repair.png` was captured, inspected, and shared privately at the historical checkpoint; this establishes repair-screen appearance, not the repair → refusal → ambiguity video gate or current access-panel appearance. Private screenshot publication is not a public judging artifact.
+- [x] V08: Baseline source published as `4a576289e26afdac6b8281b1c22011cdc2cf397c`; [hosted CI run 34292462782 passed](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). Setup, nine baseline browser tests and historical repair-screen Preview evidence are established; a managed-preview Host-shaped HTTP request returned 200. This does not certify later development or identify the exact submitted revision.
+- [ ] V09: Submission USER-REPORTED at `2026-09-08T23:59:39.346Z`; receipt, exact form payload, eligibility and acceptance remain unverified. User-provided form evidence is summarized in [SUBMISSION.md](SUBMISSION.md). This receipt gate stays open; do not recommend duplicate submission.
+
+## P5 — post-submission private model access
+
+Implementation statuses below are subject to final integrated UI/browser/build verification in M05; server evidence is 86 passing Node tests and typecheck, not genuine provider use.
+
+- [x] M01: `src/server/model-access.ts`, `http.ts`, `app/api/model-access/`: separate 32–256 non-space printable ASCII shared key, bounded 1,024-byte closed login/logout, fail-closed configuration and ten login attempts/minute globally per process.
+- [x] M02: Signed HttpOnly session grant with fixed 15-minute monotonic expiry; rotation/expiry/logout revoke access and cancel only affected sessions' model runs. Provider/tool-dispatch rechecks and idle sweep enforce revocation. Anonymous deterministic diagnosis remains available.
+- [x] M03: `app/model-access-panel.tsx`, `src/client/use-model-access.ts`, `app/meder.tsx`: explicit unlock/lock, key cleared without browser persistence, configuration/capacity status, revoked model selection disabled without silent fallback. Final browser proof remains M05.
+- [x] M04: README, runbook and spec distinguish the shared demo key from provider/exchange credentials; preserve private gateway/provider spend requirements and unchanged one-concurrent/default-ten process budget. No real provider or live exchange access configured or verified.
+- [ ] M05: Complete aggregate Node, typecheck, browser, production build and relevant reader checks; inspect fresh access-panel evidence and review/publish post-submission source. Do not reuse baseline CI or the historical screenshot as verification of this milestone.
 
 ## Continue in dependency order
 
-1. Complete integrated diff review and source publication. Local tests and runbook are complete; the screenshot is private, and an interaction video remains unrecorded.
+1. Complete M05 integrated verification and publish the post-submission access-gate milestone separately from the pre-report baseline. A finalized interaction video remains unverified.
 2. If authorized provider configuration becomes available, use a private authenticated instance to verify a genuine tool-selected run; otherwise retain the tested synthetic delivery label.
-3. Resolve G01 through the user's authenticated competition context, not assumptions. Confirm current deadline and accepted artifacts before submission.
-4. Submit only with authorization and eligibility established, then separately record receipt. Build completion cannot force an external gate to pass.
+3. Resolve G01 and the V09 receipt gate only through authorized confirmation, not assumptions about the supplied form text or user report.
+4. Continue product development without backdating improvements into the reported submission or recommending resubmission. Any later competition update requires separate authorization; build completion cannot force an external gate to pass.
 
 The original 22:28 UTC planning estimate and 23:30 feature-freeze recommendation were historical scheduling advice, not evidence that the public 23:59 UTC deadline can still be met. Do not backdate proof or mark gated work complete to fit that schedule.
 

@@ -39,6 +39,8 @@ npm run test:browser
 
 `MEDER_TEST_URL` can target another local test origin. The Playwright configuration starts its own development server only when `CI` is set. `.github/workflows/meder.yml` runs the reader, domain, server, production-build, and browser checks; a committed workflow is not evidence that hosted CI has passed.
 
+Historical baseline `4a576289e26afdac6b8281b1c22011cdc2cf397c` recorded 69 Node, nine browser and six reader tests plus typecheck/build passing. Its [hosted CI run 34292462782 passed](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782). The later private model-access server checkpoint has 86 Node tests and typecheck passing; final aggregate browser/build verification is pending. These separate checkpoints do not prove a genuine provider run. Submission is USER-REPORTED at `2026-09-08T23:59:39.346Z`; see [submission history](SUBMISSION.md) for unverified receipt/eligibility gates and the historical draft. No finalized demo video is verified: a stalled attempt was stopped and its private artifact remains unverified.
+
 Repository reader regression tests:
 
 ```sh
@@ -63,11 +65,14 @@ The interface labels failed checks as **original-order** checks. `validation.pas
 
 No Binance SDK or exchange key is needed. The optional adapter uses Node's native `fetch` against a single fixed provider endpoint; it is **not hosted Binance MCP** and does not claim an installed Binance Skill.
 
-1. Keep the deployment private or put it behind an authenticated gateway **before** configuring a paid provider. Anonymous signed sessions isolate reports; they are not user authentication or spending authorization.
-2. Copy `apps/meder/.env.example` to `apps/meder/.env.local`, or use the deployment's server-side secret manager. Configure `OPENAI_API_KEY` and `OPENAI_MODEL` with a model actually available to that provider account and supporting Responses function tools. Never paste the key into chat, the browser, a fixture, a report, or a commit.
-3. Restart the server. The model runtime option becomes available only when configuration exists and its run budget remains. Configuration alone is not verification.
-4. Select model-guided mode explicitly and run a synthetic diagnosis. Verify that a genuine provider chose the allowed tools and the exact solver produced the result. Export the sanitized report and inspect `modelVerified` before making an agent claim.
-5. A provider refusal, malformed call, timeout, incomplete response, or unavailable model is an error, never a deterministic fallback disguised as model success.
+1. Keep the deployment behind a private authenticated gateway **before** configuring a paid provider. The new shared-key gate is a private-demo safeguard, not full production accounts, distributed abuse control or a provider spending cap.
+2. Copy `apps/meder/.env.example` to the ignored `apps/meder/.env.local` only if that local file does not already exist; never overwrite existing secrets. Alternatively use the deployment's server-side secret manager. Configure `OPENAI_API_KEY` and `OPENAI_MODEL` with a model actually available to that provider account and supporting Responses function tools. Never paste a **provider** key into chat, the browser, a fixture, a report, or a commit; never use `NEXT_PUBLIC_` for secrets.
+3. Generate a **separate** random shared demo key for `MEDER_MODEL_ACCESS_KEY` (32–256 non-space printable ASCII characters; for example a secret manager's 64-character random hex value). Store it only in `.env.local` or the server secret manager and distribute privately to intended testers. This is not an OpenAI or Binance API key. Do not log it or include it in screenshots/recordings. No exchange key is required or permitted.
+4. Restart the server after environment changes. Provider settings alone do not allow anonymous paid calls. In **Private model access**, enter only the shared demo key and choose **Unlock model access**. The input clears on submit; no key is persisted in browser storage. Unlocking itself makes no provider call and can succeed without a provider, but model mode remains disabled until provider, gate, grant and run capacity are all available.
+5. Select model-guided mode explicitly and run a synthetic diagnosis. Verify that a genuine provider chose the allowed tools and the exact solver produced the result. Export the sanitized report and inspect `modelVerified` before making an agent claim. No genuine provider is configured or verified at this checkpoint.
+6. Choose **Lock model access** when finished. Logout cancels this session's active model runs but preserves the session and deterministic reports. Expiry or server-observed key rotation/removal also revokes grants and cancels affected model work. An already selected model stays selected but disabled on revocation; explicitly choose deterministic mode to continue anonymously. Provider refusal, malformed calls, timeout or unavailable configuration never silently fall back to deterministic success.
+
+The grant lasts a fixed 15 minutes on a monotonic clock and uses the existing signed HttpOnly, SameSite=Strict session cookie (Secure on HTTPS). Login is limited to ten attempts per minute **globally per process**, including successful and malformed same-origin attempts. A 429 means wait rather than retry repeatedly. Missing/invalid gate or provider settings fail closed for model admission. Key changes in `.env.local` require a server restart to reach the running process; a restart also loses all process-local reports/grants and resets the process budget.
 
 Budget: one active model run and **10 total admitted model runs per server process** by default. `MEDER_MODEL_RUN_BUDGET` permits integers 1–100; invalid configuration fails closed. Failed/canceled admitted runs still consume allowance. Each run has at most five tool/model iterations, 20 seconds total, 12 seconds per provider call, and 2,048 output tokens per response. Restarting the process resets the admission counter: this is not durable billing control. Apply provider-side spending limits as well.
 
@@ -80,6 +85,8 @@ Only these tools exist:
 The provider cannot alter intent, source mode, metadata, or the verdict. Arbitrary provider prose is discarded. Explanations are solver-authored; encrypted reasoning continuation is transient provider context and never a report, log, or export. `store:false` does not itself guarantee any particular provider-wide retention policy.
 
 ## API and data lifecycle
+
+`POST /api/model-access` requires same-origin `application/json` with a closed `{accessKey: string}` body of at most 1,024 UTF-8 bytes. `POST /api/model-access/logout` uses the same boundary and closed `{}`. Neither accepts query strings. Login returns only `modelAccess: {configured, authorized, expiresAt}` and the signed HttpOnly cookie; logout returns `modelAccess: {configured, authorized: false}` without deleting the diagnosis session. No key, hash or access token is returned in JSON. `GET /api/capabilities` reports `providerConfigured`, session-specific `modelAccess` and the shared budget, with no-store responses; `planners.model` is false unless all admission conditions hold. Missing/wrong grant yields 403 `MODEL_ACCESS_REQUIRED`; unavailable model configuration yields 503 `MODEL_UNAVAILABLE`; login-attempt or run capacity exhaustion yields 429. Deterministic requests do not require a model grant.
 
 `POST /api/diagnoses` accepts a 16-KiB closed envelope:
 
@@ -118,7 +125,7 @@ MEDER_ALLOWED_ORIGIN=https://your-private-app.example npm start -- --port 3000
 
 Set `MEDER_ALLOWED_ORIGIN` to the exact public origin without a trailing slash. It is required in production, including when TLS terminates at a reverse proxy. HTTPS origins receive Secure cookies. Forwarded host headers alone never authorize a request. Development permits exact loopback Host/origin matches and the explicitly platform-marked managed-preview domain; sibling-host mismatches are rejected.
 
-Do not deploy this in a serverless runtime that suspends work immediately after POST, or across independently routed workers: background tasks and the run store are process-local. Durable storage, authenticated application accounts, distributed execution, and production security review remain outside this release. The model budget is not a substitute for an authenticated gateway.
+Do not deploy this in a serverless runtime that suspends work immediately after POST, or across independently routed workers: background tasks, access grants, attempt limits and the run store are process-local. Durable storage, authenticated application accounts, distributed execution, and production security review remain outside this release. Neither the model budget nor the shared-key gate substitutes for an authenticated gateway and provider spending limits.
 
 ## Source references
 

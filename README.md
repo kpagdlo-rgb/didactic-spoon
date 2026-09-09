@@ -10,8 +10,12 @@ retries, signs, or looks up an order and has no exchange credentials or account 
 The Python Preview is a separate document reader, not a competing solver.
 
 **Current delivery:** tested synthetic diagnostic application with an optional
-OpenAI Responses tool-calling adapter. Model capability is currently unconfigured;
-no genuine model run, live data, eligibility, or submission has been verified.
+OpenAI Responses tool-calling adapter and a post-submission private model-access gate.
+The user reported submission at `2026-09-08T23:59:39.346Z`; receipt, eligibility,
+acceptance, and the exact submitted payload remain unverified. The latest published
+pre-report source baseline is `4a576289e26afdac6b8281b1c22011cdc2cf397c`, not a claim
+that this exact revision was submitted. Model capability remains unconfigured;
+no genuine model run or live data has been verified.
 All results are partial validation, not exchange acceptance; the notional cap
 excludes fees. The implementation and remaining gates are documented in:
 
@@ -52,8 +56,12 @@ tests. The effective setup script was rerun successfully (npm clean install and
 Python dependencies; the production dependency audit reported zero vulnerabilities).
 An actual managed-preview Host-shaped HTTP request returned 200. The repair
 screenshot was captured, inspected, and shared privately in the thread; no
-demonstration video or real-model trace has been recorded. `.github/workflows/meder.yml` now
-defines hosted CI, but no hosted CI result has been observed.
+finalized demonstration video or real-model trace is verified. A later recording
+attempt stalled and was stopped; its unverified private artifact is not video proof.
+Hosted CI for the published baseline subsequently [passed (run 34292462782)](https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782).
+These historical results do not verify later changes. At the post-submission access-gate
+checkpoint, the server implementation has 86 passing Node tests and passing typecheck;
+aggregate browser/build verification is pending.
 
 Live mode is disabled and locally returns HTTP 451 without making a Binance
 request. This enforces the historical sandbox restriction, not a newly observed
@@ -62,13 +70,24 @@ exchange response. Do not evade it through another host or proxy.
 ## Private model-enabled Meder deployment
 
 The independent Next.js app in `apps/meder` optionally uses OpenAI Responses when
-both `OPENAI_API_KEY` and `OPENAI_MODEL` are configured **on the server only**.
+`OPENAI_API_KEY`, `OPENAI_MODEL`, and a separate `MEDER_MODEL_ACCESS_KEY` are configured
+**on the server only**, and the browser session explicitly unlocks model access.
 The adapter uses server-side `fetch`, not an installed provider SDK, hosted MCP,
-or Binance Skill. Without both values, model mode remains disabled. Before supplying a key, put the
+or Binance Skill. Missing or invalid gate settings fail closed; provider settings
+alone never authorize anonymous paid calls. Generate a separate shared demo key
+(32–256 non-space printable ASCII characters); it is not an OpenAI or Binance key.
+See [secret setup and unlock steps](docs/meder/RUNBOOK.md#optional-real-model-gate).
+Before supplying a provider key, put the
 entire app and its API behind a private authenticated gateway, including preview
 deployments. The app's session cookie isolates diagnoses; it does not authenticate
-users. Same-origin checks are not authentication or protection against anonymous
-provider spending. Do not expose a model-enabled instance to the public internet.
+users. The new shared-key gate grants model access to that signed HttpOnly session
+for a fixed 15 minutes, with 10 login attempts/minute globally per process.
+Logout, expiry, or key rotation revoke access and cancel that session's active model
+runs, not deterministic runs. The UI clears the entered key and never persists it in
+browser storage. A revoked model selection stays selected but disabled; there is no
+silent deterministic fallback. Anonymous deterministic diagnosis remains available.
+This is a private-demo gate, not full production authentication. Do not expose a
+model-enabled instance to the public internet.
 Production also requires `MEDER_ALLOWED_ORIGIN` set to the exact externally served
 origin (scheme, host, and port when applicable, without a trailing slash). An unset
 production origin fails closed. Runs and signed session state live in process
@@ -98,8 +117,9 @@ durable admission controls and provider-side spending limits before enablement.
 - [Track A ecosystem research and five ideas](docs/track-a-five-ideas-ecosystem-research.md)
 - [Track B research and five concepts](docs/track-b-research-and-five-concepts.md)
 
-The research documents and Meder plan do not establish competition eligibility or a
-submitted entry. Local validation is partial and never establishes exchange acceptance.
+The research documents and Meder plan do not establish competition eligibility or
+independently verify the user-reported submission. Local validation is partial and
+never establishes exchange acceptance.
 
 ## Document Preview
 

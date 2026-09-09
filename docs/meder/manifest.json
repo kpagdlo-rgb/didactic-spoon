@@ -1,10 +1,10 @@
 {
-  "manifestVersion": 2,
+  "manifestVersion": 3,
   "name": "Meder",
   "slug": "meder",
   "previousConcept": "OrderMedic",
   "status": "tested_synthetic_diagnostic_application",
-  "checkpointDate": "2026-09-08",
+  "checkpointDate": "2026-09-09",
   "tagline": "Order clarity. Without another trade.",
   "documents": {
     "overview": "MANIFEST.md",
@@ -45,6 +45,26 @@
     "modelProvider": "optional OpenAI Responses via server-side fetch",
     "modelConfiguredAtCheckpoint": false,
     "modelCredentialVariables": ["OPENAI_API_KEY", "OPENAI_MODEL"],
+    "modelAccess": {
+      "keyVariable": "MEDER_MODEL_ACCESS_KEY",
+      "keyFormat": "32..256 non-space printable ASCII characters; separate generated shared demo key, never provider or exchange credentials",
+      "configuredAtCheckpoint": false,
+      "loginRoute": "/api/model-access",
+      "logoutRoute": "/api/model-access/logout",
+      "requestBytes": 1024,
+      "sameOriginClosedJsonOnly": true,
+      "grantTtlMs": 900000,
+      "monotonicExpiry": true,
+      "loginAttemptsPerProcessPerMinute": 10,
+      "boundToSignedHttpOnlySession": true,
+      "providerSettingsAloneAuthorizeCalls": false,
+      "missingOrInvalidSettingsFailClosed": true,
+      "logoutExpiryRotationCancelAffectedModelRuns": true,
+      "browserSecretPersistence": false,
+      "revokedModelSelectionSilentlyFallsBack": false,
+      "anonymousDeterministicAvailable": true,
+      "fullProductionAuthentication": false
+    },
     "providerProseDisplayed": false,
     "integration": "server-owned function tools; not hosted MCP or installed Skill",
     "liveModeEnabled": false,
@@ -108,7 +128,7 @@
     "off_grid_min"
   ],
   "verificationCheckpoint": {
-    "source": "final local rebuild verification on 2026-09-08; not hosted CI or external acceptance",
+    "source": "historical local rebuild verification on 2026-09-08; not external acceptance",
     "cleanInstall": true,
     "typecheck": true,
     "productionBuild": true,
@@ -119,11 +139,43 @@
     "effectiveSetupRerunSucceeded": true,
     "npmProductionAuditReportedVulnerabilities": 0,
     "hostedCiWorkflow": ".github/workflows/meder.yml",
-    "hostedCiResultVerified": false,
+    "hostedCiResultVerified": true,
+    "hostedCiConclusion": "SUCCESS",
+    "hostedCiRunId": 34292462782,
+    "hostedCiUrl": "https://github.com/kpagdlo-rgb/didactic-spoon/actions/runs/34292462782",
+    "publishedSourceBaseline": "4a576289e26afdac6b8281b1c22011cdc2cf397c",
     "repairScreenshotCapturedAndInspected": true,
     "repairScreenshotSharedPrivatelyInThread": true,
     "managedPreviewHostShapedHttpStatus": 200,
-    "videoRecorded": false
+    "videoRecorded": false,
+    "videoProofStatus": "no finalized verified video; later attempt stalled and was stopped; artifact remains private and unverified"
+  },
+  "postSubmissionCheckpoint": {
+    "milestone": "private_model_access_gate",
+    "date": "2026-09-09",
+    "serverPassingNodeTests": 86,
+    "serverTypecheckPassed": true,
+    "aggregateBrowserBuildVerification": "pending",
+    "genuineProviderConfigured": false,
+    "genuineProviderRunVerified": false,
+    "baselineResultsApplyToLaterChanges": false
+  },
+  "submission": {
+    "status": "USER_REPORTED",
+    "reportReceivedAt": "2026-09-08T23:59:39.346Z",
+    "reportedMessage": "submitted, now continue development",
+    "latestPublishedPreReportSourceBaseline": "4a576289e26afdac6b8281b1c22011cdc2cf397c",
+    "exactSubmittedSourceVerified": false,
+    "exactFormPayloadVerified": false,
+    "formEvidence": "user-provided pasted text, not independent authenticated confirmation",
+    "reportedTrackAEntryTypes": ["agent", "workflow"],
+    "reportedThemes": ["Data Analysis", "Trading Workflows", "Payment Workflows", "Onchain Workflows"],
+    "reportedFields": ["X handle URL", "track", "theme", "description", "video platform", "public video post URL", "replication guide"],
+    "reportedTerms": ["KYC", "jurisdiction exclusions", "creativity", "authenticity", "uniqueness"],
+    "receiptVerified": false,
+    "eligibilityVerified": false,
+    "acceptanceVerified": false,
+    "historicalDraftIsSubmittedPayload": false
   },
   "releaseClaims": {
     "implemented": true,
@@ -132,7 +184,8 @@
     "liveDataVerified": false,
     "productionDeploymentVerified": false,
     "competitionEligibilityVerified": false,
-    "submitted": false,
-    "submissionReceiptVerified": false
+    "submitted": "USER_REPORTED",
+    "submissionReceiptVerified": false,
+    "competitionAcceptanceVerified": false
   }
 }
