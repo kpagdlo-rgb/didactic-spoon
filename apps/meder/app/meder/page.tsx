@@ -1,4 +1,5 @@
-import Meder from "../meder";
+import { redirect } from "next/navigation";
+
 export default function MederPage() {
-  return <Meder />;
+  redirect("/app");
 }

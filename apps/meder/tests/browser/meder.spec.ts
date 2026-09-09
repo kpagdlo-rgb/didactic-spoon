@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   const capabilities = page.waitForResponse("**/api/capabilities");
-  await page.goto("/");
+  await page.goto("/app");
   await capabilities;
 });
 

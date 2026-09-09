@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { DiagnosisResult } from "../src/domain/types";
-import { parseClosedJson } from "../src/domain/json";
-import { useModelAccess } from "../src/client/use-model-access";
+import type { DiagnosisResult } from "../../src/domain/types";
+import { parseClosedJson } from "../../src/domain/json";
+import { useModelAccess } from "../../src/client/use-model-access";
 import { ModelAccessPanel } from "./model-access-panel";
 import FluidOrb from "@/components/ui/fluid-orb";
 import { QuantityCounter } from "@/components/meder/quantity-counter";

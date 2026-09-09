@@ -60,7 +60,7 @@ const diagnose = (page: Page) => page.getByRole("button", { name: "Diagnose orde
 
 async function openApp(page: Page) {
   const loaded = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/capabilities");
-  await page.goto("/");
+  await page.goto("/app");
   const response = await loaded;
   expect(response.ok()).toBe(true);
   return response.json();
@@ -218,7 +218,7 @@ test("a successful focus refresh clears a previous capabilities failure warning"
     ? { json: capabilities({ authorized: true }) }
     : { status: 500, json: { error: { code: "INTERNAL", message: "Unavailable" } } }));
   const failed = page.waitForResponse("**/api/capabilities");
-  await page.goto("/");
+  await page.goto("/app");
   expect((await failed).status()).toBe(500);
   await expect(panel(page).getByRole("alert")).toHaveText("Model access could not be checked. Deterministic diagnostics remain available.");
   await expect(modelOption(page)).toBeDisabled();
