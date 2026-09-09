@@ -17,8 +17,12 @@ test("landing renders hero, links to the tool, and stays console-clean", async (
   await expect(
     page.getByRole("link", { name: "Open the diagnostic" }).first(),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Open the diagnostic" }).first().click();
-  await expect(page).toHaveURL(/\/app$/);
+  // Cold dev servers compile /app on first navigation; wait for the URL
+  // rather than asserting immediately after the click.
+  await Promise.all([
+    page.waitForURL(/\/app$/, { timeout: 30000 }),
+    page.getByRole("link", { name: "Open the diagnostic" }).first().click(),
+  ]);
   await expect(
     page.getByRole("button", { name: "Diagnose order", exact: true }),
   ).toBeVisible();
