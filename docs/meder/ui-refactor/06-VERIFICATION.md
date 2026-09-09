@@ -95,6 +95,7 @@ Expected baseline before P0: 87 Node tests, 20 browser tests, typecheck and buil
 | Lighthouse desktop (`bunx lighthouse@12`, Playwright Chromium) | `/` performance 99, accessibility 100; `/app` performance 97, accessibility 100 |
 | Screenshots (`scripts/capture-matrix.mjs`) | 9 images in `.hoplite/artifacts/screenshots/`: app-{1920,390}-{light,dark}-{idle,result}.png + landing-1920-full.png |
 | 390 px overflow | `scrollWidth === innerWidth` at 390×844 (probe + mobile test) |
+| Copy discipline (`scripts/probe-copy.mjs`) | rendered DOM of `/`, `/app` idle and result (incl. open About-safety sheet) contains no `AI` kicker, no `total-spend` phrasing, no 01–04 numerotation |
 
 Deviations from the letter of section D: no PR exists because the repository has no base branch (only `hoplite/mylasa-3fbb4210`); the screenshots live in `.hoplite/artifacts/` instead. The "diff empty under src/" check is against the branch point `85cce3c` rather than `main`.
 
