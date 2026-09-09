@@ -81,10 +81,11 @@ async function modelPlan(store: RunStore, owner: string, id: string, options: Ex
 }
 
 export async function executeRun(store: RunStore, owner: string, id: string, options: ExecutionOptions = {}) {
-  const timer = setTimeout(() => {
-    try { store.fail(owner, id, new SafeError('TIMEOUT', 504)); } catch { /* The retention sweep may already have removed this run. */ }
-  }, Math.min(options.totalMs ?? LIMITS.totalMs, store.remaining(owner, id)));
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
+    timer = setTimeout(() => {
+      try { store.fail(owner, id, new SafeError('TIMEOUT', 504)); } catch { /* The retention sweep may already have removed this run. */ }
+    }, Math.min(options.totalMs ?? LIMITS.totalMs, store.remaining(owner, id)));
     const context = store.context(owner, id);
     let result: Result;
     if (context.planner === 'model') {
