@@ -128,6 +128,11 @@ the current guide with an older uploaded draft; that draft is a local-only
 artifact excluded from Git, so on a fresh checkout the view renders a
 placeholder instead of the old file.
 
+## License
+
+Released under the [MIT License](LICENSE). Interface components adapted from
+Rare UI (MIT); icons by Lucide (ISC); landing shader by Paper Design (MIT).
+
 Repository-owned Hoplite setup/run commands live in `.hoplite/settings.json`
 (the managed Preview runs `apps/meder` on port 3000); project overrides, if
 present, take precedence. Local proof artifacts, uploads, and dependencies
