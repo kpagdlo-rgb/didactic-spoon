@@ -162,12 +162,20 @@ export class RunStore {
     run.snapshot = immutable({ ...run.snapshot, status: 'error', result: null, error: safeError(error) });
     run.controller.abort(error);
   }
-  cancel(owner: string, id: string) {
-    const run = this.get(owner, id);
+  private cancelRun(run: Run) {
     if (run.snapshot.status === 'running') {
       run.snapshot = immutable({ ...run.snapshot, status: 'canceled', result: null, error: safeError(new SafeError('CANCELED')) });
       run.controller.abort(new SafeError('CANCELED'));
     }
+  }
+  cancelModelRuns(owner: string) {
+    this.prune();
+    for (const run of this.runs.values()) {
+      if (run.owner === owner && run.snapshot.planner === 'model') this.cancelRun(run);
+    }
+  }
+  cancel(owner: string, id: string) {
+    this.cancelRun(this.get(owner, id));
     return this.snapshot(owner, id);
   }
 }

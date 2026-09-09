@@ -24,6 +24,7 @@ function parseResponse(value: unknown): ProviderResponse {
 }
 
 export type ExecutionOptions = {
+  authorizeModel?: () => void;
   config?: ProviderConfig;
   fetch?: typeof fetch;
   modelCallMs?: number;
@@ -38,6 +39,7 @@ async function modelPlan(store: RunStore, owner: string, id: string, options: Ex
   const seenCalls = new Set<string>();
   let count = 0;
   while (count < LIMITS.toolCalls) {
+    options.authorizeModel?.();
     store.active(owner, id);
     const controller = new AbortController();
     const cancel = () => controller.abort(context.signal.reason);
@@ -60,6 +62,7 @@ async function modelPlan(store: RunStore, owner: string, id: string, options: Ex
       if (error instanceof SafeError && ['PROVIDER_FAILED', 'PROVIDER_INVALID'].includes(error.code)) throw error;
       throw new SafeError('PROVIDER_FAILED', 502);
     } finally { clearTimeout(timer); context.signal.removeEventListener('abort', cancel); }
+    options.authorizeModel?.();
     store.active(owner, id);
     const calls = response.output.filter(item => item.type === 'function_call');
     if (calls.length !== 1 || count + calls.length > LIMITS.toolCalls) throw new SafeError('PROVIDER_INVALID');
