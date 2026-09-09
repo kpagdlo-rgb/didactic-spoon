@@ -13,6 +13,22 @@ Hackathon at `2026-09-08T23:59:39.346Z`. Receipt, eligibility, acceptance, and
 the exact submitted payload remain **unverified**. Model capability is
 unconfigured; no genuine model run or live exchange data has been verified.
 
+## See it
+
+A short capture of the real flow — landing → open the diagnostic → run the
+synthetic fixture → verdict:
+
+![Meder demo — landing to verdict](docs/media/meder-demo.gif)
+
+Full-quality recording: [`docs/media/meder-demo.webm`](docs/media/meder-demo.webm)
+
+| Landing | Tool (result, light) | Tool (result, mobile dark) |
+| --- | --- | --- |
+| ![Landing](docs/media/meder-landing.png) | ![Tool result at 1920](docs/media/meder-app-1920-result.png) | ![Mobile dark result](docs/media/meder-app-mobile-dark.png) |
+
+Screenshots were captured from the running app; the demo recording is a
+verified capture of the current build, not an archived or simulated clip.
+
 ## Repository layout
 
 | Path | What it is |
