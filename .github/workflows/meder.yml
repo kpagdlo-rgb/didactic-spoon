@@ -30,7 +30,18 @@ jobs:
         working-directory: apps/meder
       - run: bun run typecheck && bun run test && bun run build
         working-directory: apps/meder
-      - run: bunx playwright install --with-deps chromium
+      # --with-deps refreshes apt indexes; the Google Chrome repo intermittently
+      # serves a hash-sum-mismatched index. Retry the whole step.
+      - name: Install Playwright Chromium
         working-directory: apps/meder
+        run: |
+          for attempt in 1 2 3; do
+            if bunx playwright install --with-deps chromium; then
+              exit 0
+            fi
+            echo "::warning::playwright install attempt $attempt failed; retrying"
+            sleep 10
+          done
+          exit 1
       - run: bun run test:browser
         working-directory: apps/meder
